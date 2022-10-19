@@ -161,17 +161,27 @@ public class SimulationService {
      */
     public void singleStepListener() {
         simulator.setMemoryAddressRegister(simulator.getProgramControl());
-        int programControlValueInDecimal = CommonUtils.convertHexadecimalToDecimal(
-                simulator.getProgramControl())+1;
-        String programControlValueInHexadecimal = CommonUtils.convertDecimalToHexadecimal(
-                CommonUtils.convertIntegerToString(programControlValueInDecimal));
-        simulator.setProgramControl(programControlValueInHexadecimal);
         simulator.setMemoryBufferRegister(getDataFromMainMemoryByLocation(
                 simulator.getMemoryAddressRegister()));
         simulator.setInstructionRegister(simulator.getMemoryBufferRegister());
 
         decodeOpcode(simulator.getInstructionRegister());
         performOperations();
+
+        if (simulator.getOpcode().getShouldIncrementPC()) {
+            incrementProgramControl();
+        }
+    }
+
+    /**
+     * Increment the program counter after instruction executed.
+     */
+    private void incrementProgramControl() {
+        int programControlValueInDecimal = CommonUtils.convertHexadecimalToDecimal(
+                simulator.getProgramControl())+1;
+        String programControlValueInHexadecimal = CommonUtils.convertDecimalToHexadecimal(
+                CommonUtils.convertIntegerToString(programControlValueInDecimal));
+        simulator.setProgramControl(programControlValueInHexadecimal);
     }
 
     /**
@@ -247,6 +257,7 @@ public class SimulationService {
         opcode.setIndexRegister(value.substring(8,10));
         opcode.setIndirectMode(value.substring(10,11));
         opcode.setAddress(value.substring(11,16));
+        opcode.setShouldIncrementPC(true);
         simulator.setOpcode(opcode);
     }
 
@@ -273,6 +284,18 @@ public class SimulationService {
                 break;
             case "42":
                 performStoreIndexRegisterToMemoryOperation();
+                break;
+            case "10":
+                performJumpIfZeroOperation();
+                break;
+            case "11":
+                performJumpIfNotEqualOperation();
+                break;
+            case "12":
+                performJumpIfConditionCodeOperation();
+                break;
+            case "13":
+                performUnconditionalJumpToAddressOperation();
                 break;
             default:
                 System.out.println("Invalid operations");
@@ -482,5 +505,50 @@ public class SimulationService {
             return;
         }
         indexRegister.setRegisterThree(data);
+    }
+
+    /**
+     * If the register value is equal to zero. Then, set PC as EA.
+     * Otherwise, increment PC by 1.
+     */
+    private void performJumpIfZeroOperation() {
+        String dataFromGPRByOpcodeInHexadecimal = getDataFromGPRByOpcode();
+        //TODO: Need to know the default value of register. Is it 0 or empty?
+        if (dataFromGPRByOpcodeInHexadecimal.equals("") || dataFromGPRByOpcodeInHexadecimal.equals("0000")) {
+            simulator.setProgramControl(simulator.getOpcode().getEffectiveAddress());
+            simulator.getOpcode().setShouldIncrementPC(false);
+        }
+    }
+
+    /**
+     * If the register value is not equal to zero. Then, set PC as EA.
+     * Otherwise, increment PC by 1.
+     */
+    private void performJumpIfNotEqualOperation() {
+        String dataFromGPRByOpcodeInHexadecimal = getDataFromGPRByOpcode();
+        if (!dataFromGPRByOpcodeInHexadecimal.equals("") && !dataFromGPRByOpcodeInHexadecimal.equals("0000")) {
+            simulator.setProgramControl(simulator.getOpcode().getEffectiveAddress());
+            simulator.getOpcode().setShouldIncrementPC(false);
+        }
+    }
+
+    /**
+     * If the register is equal to 1. Then, set PC as EA.
+     * Otherwise, increment PC by 1.
+     */
+    private void performJumpIfConditionCodeOperation() {
+        String gprRegisterSelect = simulator.getOpcode().getGeneralPurposeRegister();
+        if (gprRegisterSelect.equals("01")) {
+            simulator.setProgramControl(simulator.getOpcode().getEffectiveAddress());
+            simulator.getOpcode().setShouldIncrementPC(false);
+        }
+    }
+
+    /**
+     * Sets EA to PC as default
+     */
+    private void performUnconditionalJumpToAddressOperation() {
+        simulator.setProgramControl(simulator.getOpcode().getEffectiveAddress());
+        simulator.getOpcode().setShouldIncrementPC(false);
     }
 }

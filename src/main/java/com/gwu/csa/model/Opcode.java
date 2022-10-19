@@ -10,12 +10,15 @@ public class Opcode {
     private String address;
     private String effectiveAddress;
 
+    private Boolean shouldIncrementPC;
+
     Opcode() {
         operations = "";
         generalPurposeRegister = "";
         indexRegister = "";
         indirectMode = "";
         address = "";
+        shouldIncrementPC = true;
     }
     public String getOperations() {
         return operations;
@@ -65,6 +68,14 @@ public class Opcode {
         this.effectiveAddress = CommonUtils.convertHexadecimalNumberInFourDigits(effectiveAddress);
     }
 
+    public Boolean getShouldIncrementPC() {
+        return shouldIncrementPC;
+    }
+
+    public void setShouldIncrementPC(Boolean shouldIncrementPC) {
+        this.shouldIncrementPC = shouldIncrementPC;
+    }
+
     @Override
     public String toString() {
         return "Opcode{" +
@@ -74,6 +85,7 @@ public class Opcode {
                 ", indirectMode='" + indirectMode + '\'' +
                 ", address='" + address + '\'' +
                 ", effectiveAddress='" + effectiveAddress + '\'' +
+                ", shouldIncrementPC=" + shouldIncrementPC +
                 '}';
     }
 }
