@@ -1,6 +1,6 @@
 package main.java.com.gwu.csa.model;
 
-import main.java.com.gwu.csa.util.Utils;
+import main.java.com.gwu.csa.util.CommonUtils;
 
 public class IndexRegister {
     private String registerOne;
@@ -18,7 +18,7 @@ public class IndexRegister {
 
     public void setRegisterOne(String registerOne) {
 
-        this.registerOne = Utils.convertHexadecimalNumberInFourDigits(registerOne);
+        this.registerOne = CommonUtils.convertHexadecimalNumberInFourDigits(registerOne);
     }
 
     public String getRegisterTwo() {
@@ -27,7 +27,7 @@ public class IndexRegister {
 
     public void setRegisterTwo(String registerTwo) {
 
-        this.registerTwo = Utils.convertHexadecimalNumberInFourDigits(registerTwo);
+        this.registerTwo = CommonUtils.convertHexadecimalNumberInFourDigits(registerTwo);
     }
 
     public String getRegisterThree() {
@@ -36,7 +36,7 @@ public class IndexRegister {
 
     public void setRegisterThree(String registerThree) {
 
-        this.registerThree = Utils.convertHexadecimalNumberInFourDigits(registerThree);
+        this.registerThree = CommonUtils.convertHexadecimalNumberInFourDigits(registerThree);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package main.java.com.gwu.csa.model;
 
-import main.java.com.gwu.csa.util.Utils;
+import main.java.com.gwu.csa.util.CommonUtils;
 
 public class Opcode {
     private String operations;
@@ -62,7 +62,7 @@ public class Opcode {
     }
 
     public void setEffectiveAddress(String effectiveAddress) {
-        this.effectiveAddress = Utils.convertHexadecimalNumberInFourDigits(effectiveAddress);
+        this.effectiveAddress = CommonUtils.convertHexadecimalNumberInFourDigits(effectiveAddress);
     }
 
     @Override

@@ -5,7 +5,7 @@ import main.java.com.gwu.csa.model.Simulator;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Utils {
+public class CommonUtils {
     public static Simulator setDefaultValuesSimulator() {
         return new Simulator();
     }

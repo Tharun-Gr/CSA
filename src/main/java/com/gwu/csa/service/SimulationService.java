@@ -4,7 +4,7 @@ import main.java.com.gwu.csa.model.GeneralPurposeRegister;
 import main.java.com.gwu.csa.model.IndexRegister;
 import main.java.com.gwu.csa.model.Opcode;
 import main.java.com.gwu.csa.model.Simulator;
-import main.java.com.gwu.csa.util.Utils;
+import main.java.com.gwu.csa.util.CommonUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Scanner;
 
 public class SimulationService {
-    private List<String> mainMemory;
+    public List<String> mainMemory;
     public Simulator simulator;
 
     public SimulationService() {
-        this.mainMemory = Utils.initializeMainMemory();
-        this.simulator = Utils.setDefaultValuesSimulator();
+        this.mainMemory = CommonUtils.initializeMainMemory();
+        this.simulator = CommonUtils.setDefaultValuesSimulator();
     }
 
     /**
@@ -136,9 +136,23 @@ public class SimulationService {
      * @param memoryLocation Memory location of main memory
      */
     private void setDataInMainMemoryByLocation(String memoryData, String memoryLocation) {
-        int memoryDataInDecimal = Utils.convertHexadecimalToDecimal(memoryData);
-        String memoryDataInDecimalString = Utils.convertIntegerToString(memoryDataInDecimal);
-        int memoryLocationInDecimal = Utils.convertHexadecimalToDecimal(memoryLocation);
+        int memoryDataInDecimal = CommonUtils.convertHexadecimalToDecimal(memoryData);
+        String memoryDataInDecimalString = CommonUtils.convertIntegerToString(memoryDataInDecimal);
+        int memoryLocationInDecimal = CommonUtils.convertHexadecimalToDecimal(memoryLocation);
+        mainMemory.set(memoryLocationInDecimal,memoryDataInDecimalString);
+    }
+
+    /**
+     * Listens main store button and
+     * once clicked storing the value to main memory from memory buffer register data and
+     * memory address register as a location of main memory.
+     * @param memoryData Memory content to be stored in main memory
+     * @param memoryLocation Memory location of main memory
+     */
+    private void addDataInMainMemoryByLocation(String memoryData, String memoryLocation) {
+        int memoryDataInDecimal = CommonUtils.convertHexadecimalToDecimal(memoryData);
+        String memoryDataInDecimalString = CommonUtils.convertIntegerToString(memoryDataInDecimal);
+        int memoryLocationInDecimal = CommonUtils.convertHexadecimalToDecimal(memoryLocation);
         mainMemory.add(memoryLocationInDecimal,memoryDataInDecimalString);
     }
 
@@ -147,10 +161,10 @@ public class SimulationService {
      */
     public void singleStepListener() {
         simulator.setMemoryAddressRegister(simulator.getProgramControl());
-        int programControlValueInDecimal = Utils.convertHexadecimalToDecimal(
+        int programControlValueInDecimal = CommonUtils.convertHexadecimalToDecimal(
                 simulator.getProgramControl())+1;
-        String programControlValueInHexadecimal = Utils.convertDecimalToHexadecimal(
-                Utils.convertIntegerToString(programControlValueInDecimal));
+        String programControlValueInHexadecimal = CommonUtils.convertDecimalToHexadecimal(
+                CommonUtils.convertIntegerToString(programControlValueInDecimal));
         simulator.setProgramControl(programControlValueInHexadecimal);
         simulator.setMemoryBufferRegister(getDataFromMainMemoryByLocation(
                 simulator.getMemoryAddressRegister()));
@@ -165,7 +179,7 @@ public class SimulationService {
      */
     public void runListener() {
         int mainMemoryLength = mainMemory.size();
-        int i = Utils.convertHexadecimalToDecimal(simulator.getProgramControl());
+        int i = CommonUtils.convertHexadecimalToDecimal(simulator.getProgramControl());
         while (i < mainMemoryLength) {
             singleStepListener();
             i++;
@@ -198,7 +212,7 @@ public class SimulationService {
     private void readDataFromFile(String data) {
         String memoryLocation = data.substring(0,4);
         String memoryData = data.substring(5,9);
-        setDataInMainMemoryByLocation(memoryData, memoryLocation);
+        addDataInMainMemoryByLocation(memoryData, memoryLocation);
     }
 
     /**
@@ -207,8 +221,8 @@ public class SimulationService {
      * @return data from the specific main memory location
      */
     private String getDataFromMainMemoryByLocation(String value) {
-        int memoryLocation = Utils.convertHexadecimalToDecimal(value);
-        return Utils.convertDecimalToHexadecimal(mainMemory.get(memoryLocation));
+        int memoryLocation = CommonUtils.convertHexadecimalToDecimal(value);
+        return CommonUtils.convertDecimalToHexadecimal(mainMemory.get(memoryLocation));
     }
 
     /**
@@ -217,7 +231,7 @@ public class SimulationService {
      */
     private void decodeOpcode(String value) {
         System.out.println("value "+value);
-        String binaryValue = Utils.convertHexadecimalToBinary(value);
+        String binaryValue = CommonUtils.convertHexadecimalToBinary(value);
         System.out.println("binaryValue "+binaryValue);
         assignOpcodeValue(binaryValue);
     }
@@ -240,9 +254,9 @@ public class SimulationService {
      * perform operations from decoded opcode
      */
     private void performOperations() {
-        String operationsCodeInOctal = Utils.convertBinaryToOctalNumber(
+        String operationsCodeInOctal = CommonUtils.convertBinaryToOctalNumber(
                 simulator.getOpcode().getOperations());
-        String octalInProperForm = Utils.convertOctalToProperTwoDigitOctalNumber(operationsCodeInOctal);
+        String octalInProperForm = CommonUtils.convertOctalToProperTwoDigitOctalNumber(operationsCodeInOctal);
         calculateEffectiveAddress();
         switch (octalInProperForm) {
             case "01":
@@ -271,12 +285,12 @@ public class SimulationService {
     private void calculateEffectiveAddress() {
         if (simulator.getOpcode().getIndexRegister().equals("00")) {
             if (simulator.getOpcode().getIndirectMode().equals("0")) {
-                String effectiveAddressInHexadecimal = Utils.convertBinaryToHexadecimal(
+                String effectiveAddressInHexadecimal = CommonUtils.convertBinaryToHexadecimal(
                         simulator.getOpcode().getAddress());
                 simulator.getOpcode().setEffectiveAddress(effectiveAddressInHexadecimal);
                 return;
             }
-            String addressInHexadecimal = Utils.convertBinaryToHexadecimal(
+            String addressInHexadecimal = CommonUtils.convertBinaryToHexadecimal(
                     simulator.getOpcode().getAddress());
             String dataFromMainMemory = getDataFromMainMemoryByLocation(addressInHexadecimal);
             simulator.getOpcode().setEffectiveAddress(dataFromMainMemory);
@@ -293,15 +307,15 @@ public class SimulationService {
      * Calculating effective address for zero bit indirect mode
      */
     private void calculateEffectiveAddressForFalseIndirectMode() {
-        int effectiveAddressInDecimal = Utils.convertBinaryToDecimal(
+        int effectiveAddressInDecimal = CommonUtils.convertBinaryToDecimal(
                 simulator.getOpcode().getAddress());
-        int indexRegisterDataInDecimalInteger = Utils.convertHexadecimalToDecimal(
+        int indexRegisterDataInDecimalInteger = CommonUtils.convertHexadecimalToDecimal(
                 getDataFromIndexRegisterByAddress());
         int calculatedEffectiveAddressInDecimal = effectiveAddressInDecimal +
                 indexRegisterDataInDecimalInteger;
-        String calculatedEffectiveAddressInDecimalString = Utils.convertIntegerToString(
+        String calculatedEffectiveAddressInDecimalString = CommonUtils.convertIntegerToString(
                 calculatedEffectiveAddressInDecimal);
-        String calculatedEffectiveAddressInHexadecimal = Utils.convertDecimalToHexadecimal(
+        String calculatedEffectiveAddressInHexadecimal = CommonUtils.convertDecimalToHexadecimal(
                 calculatedEffectiveAddressInDecimalString);
         simulator.getOpcode().setEffectiveAddress(calculatedEffectiveAddressInHexadecimal);
     }
@@ -310,21 +324,21 @@ public class SimulationService {
      * Calculating effective address for indirect mode
      */
     private void calculateEffectiveAddressForTrueIndirectMode() {
-        int indexRegisterDataInDecimal = Utils.convertHexadecimalToDecimal(
+        int indexRegisterDataInDecimal = CommonUtils.convertHexadecimalToDecimal(
                 getDataFromIndexRegisterByAddress());
-        int addressInOpcodeInDecimalInteger = Utils.convertBinaryToDecimal(
+        int addressInOpcodeInDecimalInteger = CommonUtils.convertBinaryToDecimal(
                 simulator.getOpcode().getAddress());
-        String addressInOpcodeInDecimalString = Utils.convertIntegerToString(addressInOpcodeInDecimalInteger);
-        String addressInOpcodeInHexadecimalString = Utils.convertDecimalToHexadecimal(addressInOpcodeInDecimalString);
+        String addressInOpcodeInDecimalString = CommonUtils.convertIntegerToString(addressInOpcodeInDecimalInteger);
+        String addressInOpcodeInHexadecimalString = CommonUtils.convertDecimalToHexadecimal(addressInOpcodeInDecimalString);
         String effectiveAddressDataFromMemoryInHexadecimal = getDataFromMainMemoryByLocation(
                 addressInOpcodeInHexadecimalString);
-        int effectiveAddressDataFromMemoryInDecimalInteger = Utils.convertHexadecimalToDecimal(
+        int effectiveAddressDataFromMemoryInDecimalInteger = CommonUtils.convertHexadecimalToDecimal(
                 effectiveAddressDataFromMemoryInHexadecimal);
         int preCalculatedEffectiveAddressInDecimalInteger = indexRegisterDataInDecimal +
                 effectiveAddressDataFromMemoryInDecimalInteger;
-        String preCalculatedEffectiveAddressInDecimalString = Utils.convertIntegerToString(
+        String preCalculatedEffectiveAddressInDecimalString = CommonUtils.convertIntegerToString(
                 preCalculatedEffectiveAddressInDecimalInteger);
-        String preCalculatedEffectiveAddressInHexadecimalString = Utils.convertDecimalToHexadecimal(
+        String preCalculatedEffectiveAddressInHexadecimalString = CommonUtils.convertDecimalToHexadecimal(
                 preCalculatedEffectiveAddressInDecimalString);
         String calculatedEffectiveAddressInHexadecimal = getDataFromMainMemoryByLocation(
                 preCalculatedEffectiveAddressInHexadecimalString);
@@ -336,7 +350,7 @@ public class SimulationService {
      * @return
      */
     private String getDataFromIndexRegisterByAddress() {
-        int indexRegisterInDecimal = Utils.convertBinaryToDecimal(
+        int indexRegisterInDecimal = CommonUtils.convertBinaryToDecimal(
                 simulator.getOpcode().getIndexRegister());
         String indexRegisterDataInHexadecimalString;
         if (indexRegisterInDecimal == 1) {

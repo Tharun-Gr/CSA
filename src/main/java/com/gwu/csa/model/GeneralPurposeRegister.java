@@ -1,6 +1,6 @@
 package main.java.com.gwu.csa.model;
 
-import main.java.com.gwu.csa.util.Utils;
+import main.java.com.gwu.csa.util.CommonUtils;
 
 public class GeneralPurposeRegister {
     private String registerZero;
@@ -20,7 +20,7 @@ public class GeneralPurposeRegister {
 
     public void setRegisterZero(String registerZero) {
 
-        this.registerZero = Utils.convertHexadecimalNumberInFourDigits(registerZero);
+        this.registerZero = CommonUtils.convertHexadecimalNumberInFourDigits(registerZero);
     }
 
     public String getRegisterOne() {
@@ -29,7 +29,7 @@ public class GeneralPurposeRegister {
 
     public void setRegisterOne(String registerOne) {
 
-        this.registerOne = Utils.convertHexadecimalNumberInFourDigits(registerOne);
+        this.registerOne = CommonUtils.convertHexadecimalNumberInFourDigits(registerOne);
     }
 
     public String getRegisterTwo() {
@@ -38,7 +38,7 @@ public class GeneralPurposeRegister {
 
     public void setRegisterTwo(String registerTwo) {
 
-        this.registerTwo = Utils.convertHexadecimalNumberInFourDigits(registerTwo);
+        this.registerTwo = CommonUtils.convertHexadecimalNumberInFourDigits(registerTwo);
     }
 
     public String getRegisterThree() {
@@ -47,7 +47,7 @@ public class GeneralPurposeRegister {
 
     public void setRegisterThree(String registerThree) {
 
-        this.registerThree = Utils.convertHexadecimalNumberInFourDigits(registerThree);
+        this.registerThree = CommonUtils.convertHexadecimalNumberInFourDigits(registerThree);
     }
 
     @Override

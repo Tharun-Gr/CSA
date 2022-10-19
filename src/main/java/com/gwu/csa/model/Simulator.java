@@ -1,6 +1,6 @@
 package main.java.com.gwu.csa.model;
 
-import main.java.com.gwu.csa.util.Utils;
+import main.java.com.gwu.csa.util.CommonUtils;
 
 public class Simulator {
     private String programControl;
@@ -33,7 +33,7 @@ public class Simulator {
     }
 
     public void setProgramControl(String programControl) {
-        this.programControl = Utils.convertHexadecimalNumberInFourDigits(programControl);
+        this.programControl = CommonUtils.convertHexadecimalNumberInFourDigits(programControl);
     }
 
     public String getMemoryAddressRegister() {
@@ -41,7 +41,7 @@ public class Simulator {
     }
 
     public void setMemoryAddressRegister(String memoryAddressRegister) {
-        this.memoryAddressRegister = Utils.convertHexadecimalNumberInFourDigits(memoryAddressRegister);
+        this.memoryAddressRegister = CommonUtils.convertHexadecimalNumberInFourDigits(memoryAddressRegister);
     }
 
     public String getMemoryBufferRegister() {
@@ -49,7 +49,7 @@ public class Simulator {
     }
 
     public void setMemoryBufferRegister(String memoryBufferRegister) {
-        this.memoryBufferRegister = Utils.convertHexadecimalNumberInFourDigits(memoryBufferRegister);
+        this.memoryBufferRegister = CommonUtils.convertHexadecimalNumberInFourDigits(memoryBufferRegister);
     }
 
     public String getMemoryFaultRegister() {
@@ -65,7 +65,7 @@ public class Simulator {
     }
 
     public void setInstructionRegister(String instructionRegister) {
-        this.instructionRegister = Utils.convertHexadecimalNumberInFourDigits(instructionRegister);
+        this.instructionRegister = CommonUtils.convertHexadecimalNumberInFourDigits(instructionRegister);
     }
 
     public String getPrivileged() {
