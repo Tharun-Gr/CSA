@@ -94,7 +94,7 @@
 >>
 >>> #### 7. SOB: ***Subtract One and Branch***
 >>> - ***0018*** - Load some value in grp3.
->>> - Enter the instruction code. Load and SS the PC.
+>>> - Enter the instruction code. Load and SS the PC.git stat
 >>> - It'll subtract by 1 of the gpr3 value.
 >>> - If the subtracted value greater than 0, then set EA value to PC.
 >>> - Otherwise, increment the PC by 1.
@@ -110,5 +110,9 @@
 >>> - The sum value will be stored in grp0.
 >>
 >>> #### 7. AIR: ***Add Immediate to Register***
->>> - ***001B*** - load the value on gpr0 as a r and gpr1 as a immediate
->>> - Add both the values and store it on gpr0.
+>>> - ***001B*** - load the value on gpr0
+>>> - Add gpr0 and immediate values and store it on gpr0.
+>>
+>>> #### 7. SIR: ***Subtract Immediate to Register***
+>>> - ***001C*** - load the value on gpr0
+>>> - Subtract gpr0 and immediate values and store it on gpr0.
