@@ -76,3 +76,39 @@
 >>
 >>> #### 4. JMA: ***Unconditional Jump To Address***
 >>> - ***0014*** - Sets EA to PC as default.
+>>
+>>> #### 5. JSR: ***Jump and save return***
+>>> - ***0015*** - Increment PC by 1 and stored it in GPR3.
+>>> - Then, sets PC as EA.
+>>
+>>> #### 6. RFS: ***Return from sub routine***
+>>> - ***0016*** - Load/have some value in gpr3 and load 0016 to pc.
+>>> - Then, execute the SS, it will set the gpr3 value to pc.
+>>
+>>> #### 7. SOB: ***Subtract One and Branch***
+>>> - ***0017*** - Load some value in grp3.
+>>> - Enter the instruction code. Load and SS the PC.
+>>> - It'll subtract by 1 of the gpr3 value.
+>>> - If the subtracted value greater than 0, then set EA value to PC.
+>>> - Otherwise, increment the PC by 1.
+>>
+>>> #### 7. SOB: ***Subtract One and Branch***
+>>> - ***0018*** - Load some value in grp3.
+>>> - Enter the instruction code. Load and SS the PC.
+>>> - It'll subtract by 1 of the gpr3 value.
+>>> - If the subtracted value greater than 0, then set EA value to PC.
+>>> - Otherwise, increment the PC by 1.
+>>
+>>> #### 7. AMR: ***Add memory to register***
+>>> - ***0019*** - Load some value in grp0.
+>>> - grp0 value will add up to EA.
+>>> - The sum value will be stored in grp0.
+>>
+>>> #### 7. AMR: ***Add memory to register***
+>>> - ***001A*** - Load some value in grp0.
+>>> - grp0 value will add up to EA.
+>>> - The sum value will be stored in grp0.
+>>
+>>> #### 7. AIR: ***Add Immediate to Register***
+>>> - ***001B*** - load the value on gpr0 as a r and gpr1 as a immediate
+>>> - Add both the values and store it on gpr0.

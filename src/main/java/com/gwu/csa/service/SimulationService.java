@@ -297,6 +297,30 @@ public class SimulationService {
             case "13":
                 performUnconditionalJumpToAddressOperation();
                 break;
+            case "14":
+                performJumpAndSaveReturnAddressOperation();
+                break;
+            case "15":
+                performReturnFromSubRoutineOperation();
+                break;
+            case "16":
+                performSubtractOneAndBranchOperation();
+                break;
+            case "17":
+                performJumpGreaterThanOrEqualToOperation();
+                break;
+            case "04":
+                performAddMemoryToRegisterOperation();
+                break;
+            case "05":
+                performSubtractMemoryToRegisterOperation();
+                break;
+            case "06":
+                performAddImmediateToRegisterOperation();
+                break;
+            case "07":
+                performSubtractImmediateToRegisterOperation();
+                break;
             default:
                 System.out.println("Invalid operations");
         }
@@ -550,5 +574,119 @@ public class SimulationService {
     private void performUnconditionalJumpToAddressOperation() {
         simulator.setProgramControl(simulator.getOpcode().getEffectiveAddress());
         simulator.getOpcode().setShouldIncrementPC(false);
+    }
+
+    /**
+     * sets incremented by 1 value of pc to gpr3 and EA to PC.
+     */
+    private void performJumpAndSaveReturnAddressOperation() {
+        int programControlValueInDecimal = CommonUtils.convertHexadecimalToDecimal(
+                simulator.getProgramControl())+1;
+        String programControlValueInHexadecimal = CommonUtils.convertDecimalToHexadecimal(
+                CommonUtils.convertIntegerToString(programControlValueInDecimal));
+        loadGPRFromOpcode(programControlValueInHexadecimal);
+        simulator.setProgramControl(simulator.getOpcode().getEffectiveAddress());
+        simulator.getOpcode().setShouldIncrementPC(false);
+    }
+
+    /**
+     * sets gpr3 value to pc.
+     */
+    private void performReturnFromSubRoutineOperation() {
+        String dataFromGPRByOpcodeInHexadecimal = getDataFromGPRByOpcode();
+        simulator.setProgramControl(dataFromGPRByOpcodeInHexadecimal);
+        simulator.getOpcode().setShouldIncrementPC(false);
+    }
+
+    /**
+     * Subtract the gpr by 1. If the value is greater than 0, sets EA to PC
+     * Otherwise, increment PC by 1.
+     */
+    private void performSubtractOneAndBranchOperation() {
+        String dataFromGPRByOpcodeInHexadecimal = getDataFromGPRByOpcode();
+        int subtractedValue = CommonUtils.convertHexadecimalToDecimal(dataFromGPRByOpcodeInHexadecimal) - 1;
+        String subtractedValueInString = CommonUtils.convertIntegerToString(subtractedValue);
+        loadGPRFromOpcode(CommonUtils.convertDecimalToHexadecimal(subtractedValueInString));
+
+        String updatedDataFromGPRByOpcodeInHexadecimal = getDataFromGPRByOpcode();
+        int updatedDataFromGPRByOpcodeInDecimal = CommonUtils.convertHexadecimalToDecimal(updatedDataFromGPRByOpcodeInHexadecimal);
+        if (!(updatedDataFromGPRByOpcodeInDecimal > 0)) {
+            return;
+        }
+        simulator.setProgramControl(simulator.getOpcode().getEffectiveAddress());
+        simulator.getOpcode().setShouldIncrementPC(false);
+    }
+
+    /**
+     * If the value of GPR is greater than or equal to zero, sets ea to pc.
+     * Otherwise, increment PC by 1.
+     */
+    private void performJumpGreaterThanOrEqualToOperation() {
+        String dataFromGPRByOpcodeInHexadecimal = getDataFromGPRByOpcode();
+        int dataFromGPRByOpcodeInDecimal = CommonUtils.convertHexadecimalToDecimal(
+                dataFromGPRByOpcodeInHexadecimal);
+
+        if (dataFromGPRByOpcodeInDecimal < 0) {
+            return;
+        }
+        simulator.setProgramControl(simulator.getOpcode().getEffectiveAddress());
+        simulator.getOpcode().setShouldIncrementPC(false);
+    }
+
+    /**
+     * Sums the register value to EA. Stores the result to the register.
+     */
+    private void performAddMemoryToRegisterOperation() {
+        int dataFromGPRByOpcodeInDecimal = CommonUtils.convertHexadecimalToDecimal(
+                getDataFromGPRByOpcode());
+        int effectiveAddressValue = CommonUtils.convertHexadecimalToDecimal(
+                simulator.getOpcode().getEffectiveAddress());
+
+        int sumValue = dataFromGPRByOpcodeInDecimal + effectiveAddressValue;
+        loadGPRFromOpcode(CommonUtils.convertDecimalToHexadecimal(
+                CommonUtils.convertIntegerToString(sumValue)));
+    }
+
+    /**
+     * Subtracts the register value to EA. Stores the result to the register.
+     */
+    private void performSubtractMemoryToRegisterOperation() {
+        //TODO: Handle subtraction 0-1
+        int dataFromGPRByOpcodeInDecimal = CommonUtils.convertHexadecimalToDecimal(
+                getDataFromGPRByOpcode());
+        int effectiveAddressValue = CommonUtils.convertHexadecimalToDecimal(
+                simulator.getOpcode().getEffectiveAddress());
+
+        int subtractedValue = Math.abs(dataFromGPRByOpcodeInDecimal - effectiveAddressValue);
+        loadGPRFromOpcode(CommonUtils.convertDecimalToHexadecimal(
+                CommonUtils.convertIntegerToString(subtractedValue)));
+    }
+
+    /**
+     * add the immediate and gpr0.
+     */
+    private void performAddImmediateToRegisterOperation() {
+        int dataFromGPRByOpcodeInDecimal = CommonUtils.convertHexadecimalToDecimal(
+                getDataFromGPRByOpcode());
+        int immediate = CommonUtils.convertHexadecimalToDecimal(
+                simulator.getOpcode().getEffectiveAddress());
+
+        int sumValue = dataFromGPRByOpcodeInDecimal - immediate;
+        loadGPRFromOpcode(CommonUtils.convertDecimalToHexadecimal(
+                CommonUtils.convertIntegerToString(sumValue)));
+    }
+
+    /**
+     * subtract the immediate and gpr0.
+     */
+    private void performSubtractImmediateToRegisterOperation() {
+        int dataFromGPRByOpcodeInDecimal = CommonUtils.convertHexadecimalToDecimal(
+                getDataFromGPRByOpcode());
+        int immediate = CommonUtils.convertHexadecimalToDecimal(
+                simulator.getOpcode().getEffectiveAddress());
+
+        int subtractedValue = dataFromGPRByOpcodeInDecimal - immediate;
+        loadGPRFromOpcode(CommonUtils.convertDecimalToHexadecimal(
+                CommonUtils.convertIntegerToString(subtractedValue)));
     }
 }
