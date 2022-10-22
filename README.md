@@ -92,27 +92,27 @@
 >>> - If the subtracted value greater than 0, then set EA value to PC.
 >>> - Otherwise, increment the PC by 1.
 >>
->>> #### 7. SOB: ***Subtract One and Branch***
+>>> #### 8. SOB: ***Subtract One and Branch***
 >>> - ***0018*** - Load some value in grp3.
 >>> - Enter the instruction code. Load and SS the PC.git stat
 >>> - It'll subtract by 1 of the gpr3 value.
 >>> - If the subtracted value greater than 0, then set EA value to PC.
 >>> - Otherwise, increment the PC by 1.
 >>
->>> #### 7. AMR: ***Add memory to register***
+>>> #### 9. AMR: ***Add memory to register***
 >>> - ***0019*** - Load some value in grp0.
 >>> - grp0 value will add up to EA.
 >>> - The sum value will be stored in grp0.
 >>
->>> #### 7. AMR: ***Add memory to register***
+>>> #### 10. AMR: ***Add memory to register***
 >>> - ***001A*** - Load some value in grp0.
 >>> - grp0 value will add up to EA.
 >>> - The sum value will be stored in grp0.
 >>
->>> #### 7. AIR: ***Add Immediate to Register***
+>>> #### 11. AIR: ***Add Immediate to Register***
 >>> - ***001B*** - load the value on gpr0
 >>> - Add gpr0 and immediate values and store it on gpr0.
 >>
->>> #### 7. SIR: ***Subtract Immediate to Register***
+>>> #### 12. SIR: ***Subtract Immediate to Register***
 >>> - ***001C*** - load the value on gpr0
 >>> - Subtract gpr0 and immediate values and store it on gpr0.

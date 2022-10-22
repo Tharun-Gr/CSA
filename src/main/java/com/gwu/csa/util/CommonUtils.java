@@ -56,4 +56,11 @@ public class CommonUtils {
         String decimalString = convertIntegerToString(decimal);
         return convertDecimalToHexadecimal(decimalString);
     }
+
+    public static String incrementHexadecimal(String hexadecimalValue, int incrementalValue) {
+        int hexadecimalValueInDecimal = CommonUtils.convertHexadecimalToDecimal(hexadecimalValue)+incrementalValue;
+        String incrementedHexadecimalValue = CommonUtils.convertDecimalToHexadecimal(
+                CommonUtils.convertIntegerToString(hexadecimalValueInDecimal));
+        return incrementedHexadecimalValue;
+    }
 }

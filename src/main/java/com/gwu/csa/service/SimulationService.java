@@ -135,7 +135,7 @@ public class SimulationService {
      * @param memoryData Memory content to be stored in main memory
      * @param memoryLocation Memory location of main memory
      */
-    private void setDataInMainMemoryByLocation(String memoryData, String memoryLocation) {
+    public void setDataInMainMemoryByLocation(String memoryData, String memoryLocation) {
         int memoryDataInDecimal = CommonUtils.convertHexadecimalToDecimal(memoryData);
         String memoryDataInDecimalString = CommonUtils.convertIntegerToString(memoryDataInDecimal);
         int memoryLocationInDecimal = CommonUtils.convertHexadecimalToDecimal(memoryLocation);
@@ -230,7 +230,7 @@ public class SimulationService {
      * @param value main memory location
      * @return data from the specific main memory location
      */
-    private String getDataFromMainMemoryByLocation(String value) {
+    public String getDataFromMainMemoryByLocation(String value) {
         int memoryLocation = CommonUtils.convertHexadecimalToDecimal(value);
         return CommonUtils.convertDecimalToHexadecimal(mainMemory.get(memoryLocation));
     }
@@ -240,9 +240,7 @@ public class SimulationService {
      * @param value opcode value
      */
     private void decodeOpcode(String value) {
-        System.out.println("value "+value);
         String binaryValue = CommonUtils.convertHexadecimalToBinary(value);
-        System.out.println("binaryValue "+binaryValue);
         assignOpcodeValue(binaryValue);
     }
 
@@ -656,8 +654,12 @@ public class SimulationService {
                 getDataFromGPRByOpcode());
         int effectiveAddressValue = CommonUtils.convertHexadecimalToDecimal(
                 simulator.getOpcode().getEffectiveAddress());
-
-        int subtractedValue = Math.abs(dataFromGPRByOpcodeInDecimal - effectiveAddressValue);
+        int subtractedValue = 0;
+        if (dataFromGPRByOpcodeInDecimal > effectiveAddressValue) {
+            subtractedValue = dataFromGPRByOpcodeInDecimal - effectiveAddressValue;
+        } else {
+            subtractedValue = effectiveAddressValue - dataFromGPRByOpcodeInDecimal;
+        }
         loadGPRFromOpcode(CommonUtils.convertDecimalToHexadecimal(
                 CommonUtils.convertIntegerToString(subtractedValue)));
     }

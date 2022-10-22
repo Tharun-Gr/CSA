@@ -27,6 +27,8 @@ public class GUI extends JFrame {
     private JButton singleStepButton;
     private JButton runButton;
     private JButton showMemoryButton;
+    private JButton programOneButton;
+    private JButton controlInputButton;
     private JTextField opcodeTextField;
     private JTextField programControlTextField;
     private JTextField marTextField;
@@ -43,6 +45,8 @@ public class GUI extends JFrame {
     private JTextField ixrThreeTextField;
     private JTextField haltTextField;
     private JTextField runTextField;
+    private JTextField consoleInputTextField;
+    private JTextArea consoleOutputTextField;
     private JLabel gprZeroLabel;
     private JLabel gprOneLabel;
     private JLabel gprTwoLabel;
@@ -63,6 +67,11 @@ public class GUI extends JFrame {
     private JLabel addressOpcodeLabel;
     private JLabel haltLabel;
     private JLabel runLabel;
+    private JLabel opcodeLabel;
+    private JLabel consoleLabel;
+    private int programOneInputCounter = 0;
+    private String programOneMemoryStart = "0022";
+    private String programOneSearchLocation = "0036";
 
     public GUI() {
         this.service = new SimulationService();
@@ -117,26 +126,30 @@ public class GUI extends JFrame {
         this.singleStepButton = new JButton("SS");
         this.runButton = new JButton("RUN");
         this.showMemoryButton = new JButton("Show memory");
+        this.programOneButton = new JButton("Program 1");
+        this.controlInputButton = new JButton("Load Input");
     }
 
     private void applyButtonStyles() {
-        this.pcLoadButton.setBounds(1300,80,100, 40);
-        this.marLoadButton.setBounds(1300,150,100, 40);
-        this.mbrLoadButton.setBounds(1300,220,100, 40);
-        this.gprZeroLoadButton.setBounds(565,80,100, 40);
-        this.gprOneLoadButton.setBounds(565,150,100, 40);
-        this.gprTwoLoadButton.setBounds(565,220,100, 40);
-        this.gprThreeLoadButton.setBounds(565,290,100, 40);
-        this.ixrOneLoadButton.setBounds(565,420,100, 40);
-        this.ixrTwoLoadButton.setBounds(565,490,100, 40);
-        this.ixrThreeLoadButton.setBounds(565,560,100, 40);
-        this.showMemoryButton.setBounds(750,560,100,40);
-        this.storeButton.setBounds(900,560,100,40);
-        this.storePlusButton.setBounds(1050,560,100,40);
-        this.mainLoadButton.setBounds(1200,560,100,40);
-        this.initButton.setBounds(1350,560,100,40);
-        this.singleStepButton.setBounds(1210,650,50,100);
-        this.runButton.setBounds(1270,650,60,100);
+        this.pcLoadButton.setBounds(650,30,70, 40);
+        this.marLoadButton.setBounds(650,100,70, 40);
+        this.mbrLoadButton.setBounds(650,170,70, 40);
+        this.gprZeroLoadButton.setBounds(230,30,70, 40);
+        this.gprOneLoadButton.setBounds(230,100,70, 40);
+        this.gprTwoLoadButton.setBounds(230,170,70, 40);
+        this.gprThreeLoadButton.setBounds(230,240,70, 40);
+        this.ixrOneLoadButton.setBounds(230,310,70, 40);
+        this.ixrTwoLoadButton.setBounds(230,380,70, 40);
+        this.ixrThreeLoadButton.setBounds(230,450,70, 40);
+        this.showMemoryButton.setBounds(30,560,100,40);
+        this.storeButton.setBounds(160,560,70,40);
+        this.storePlusButton.setBounds(260,560,70,40);
+        this.mainLoadButton.setBounds(360,560,70,40);
+        this.initButton.setBounds(460,560,70,40);
+        this.singleStepButton.setBounds(400,650,50,100);
+        this.runButton.setBounds(500,650,50,100);
+        this.programOneButton.setBounds(900,30,100, 40);
+        this.controlInputButton.setBounds(1070,125,100,40);
     }
 
     private void addButtons() {
@@ -157,6 +170,8 @@ public class GUI extends JFrame {
         add(initButton);
         add(singleStepButton);
         add(runButton);
+        add(programOneButton);
+        add(controlInputButton);
     }
 
     private void createTextFields() {
@@ -176,55 +191,61 @@ public class GUI extends JFrame {
         this.ixrThreeTextField= new JTextField();
         this.haltTextField = new JTextField();
         this.runTextField = new JTextField();
+        this.consoleInputTextField = new JTextField();
+        this.consoleOutputTextField = new JTextArea(5,5);
     }
 
     private void applyStylesTextFields() {
-        this.programControlTextField.setBounds(800,80,400,40);
+        this.programControlTextField.setBounds(500,30,100,40);
         this.programControlTextField.setEditable(false);
 
-        this.marTextField.setBounds(800,150,400,40);
+        this.marTextField.setBounds(500,100,100,40);
         this.marTextField.setEditable(false);
 
-        this.mbrTextField.setBounds(800,220,400,40);
+        this.mbrTextField.setBounds(500,170,100,40);
         this.mbrTextField.setEditable(false);
 
-        this.irTextField.setBounds(800,290,400,40);
+        this.irTextField.setBounds(500,240,100,40);
         this.irTextField.setEditable(false);
 
-        this.mfrTextField.setBounds(800,360,400,40);
+        this.mfrTextField.setBounds(500,310,100,40);
         this.mfrTextField.setEditable(false);
 
-        this.privilegedTextField.setBounds(800,430,400,40);
+        this.privilegedTextField.setBounds(500,380,100,40);
         this.privilegedTextField.setEditable(false);
 
-        this.gprZeroTextField.setBounds(100,80,400,40);
+        this.gprZeroTextField.setBounds(100,30,100,40);
         this.gprZeroTextField.setEditable(false);
 
-        this.gprOneTextField.setBounds(100,150,400,40);
+        this.gprOneTextField.setBounds(100,100,100,40);
         this.gprOneTextField.setEditable(false);
 
-        this.gprTwoTextField.setBounds(100,220,400,40);
+        this.gprTwoTextField.setBounds(100,170,100,40);
         this.gprTwoTextField.setEditable(false);
 
-        this.gprThreeTextField.setBounds(100,290,400,40);
+        this.gprThreeTextField.setBounds(100,240,100,40);
         this.gprThreeTextField.setEditable(false);
 
-        this.ixrOneTextField.setBounds(100,420,400,40);
+        this.ixrOneTextField.setBounds(100,310,100,40);
         this.ixrOneTextField.setEditable(false);
 
-        this.ixrTwoTextField.setBounds(100,490,400,40);
+        this.ixrTwoTextField.setBounds(100,380,100,40);
         this.ixrTwoTextField.setEditable(false);
 
-        this.ixrThreeTextField.setBounds(100,560,400,40);
+        this.ixrThreeTextField.setBounds(100,450,100,40);
         this.ixrThreeTextField.setEditable(false);
 
-        this.haltTextField.setBounds(1450,650,75,40);
+        this.haltTextField.setBounds(650,650,75,40);
         this.haltTextField.setEditable(false);
 
-        this.runTextField.setBounds(1450,710,75,40);
+        this.runTextField.setBounds(650,710,75,40);
         this.runTextField.setEditable(false);
 
-        this.opcodeTextField.setBounds(50,675,1100,50);
+        this.opcodeTextField.setBounds(150,675,200,50);
+        this.consoleInputTextField.setBounds(900,125,150,40);
+        this.consoleOutputTextField.setBounds(900, 200, 350, 100);
+        this.consoleOutputTextField.setEditable(false);
+        this.consoleOutputTextField.setText("Click the program 1 button to execute...");
     }
 
     private void addTextFields() {
@@ -244,6 +265,8 @@ public class GUI extends JFrame {
         add(ixrThreeTextField);
         add(haltTextField);
         add(runTextField);
+        add(consoleInputTextField);
+        add(consoleOutputTextField);
     }
 
     private void createLabels() {
@@ -267,29 +290,33 @@ public class GUI extends JFrame {
         this.addressOpcodeLabel = new JLabel("ADDRESS");
         this.haltLabel =  new JLabel("HALT");
         this.runLabel = new JLabel("RUN");
+        this.opcodeLabel = new JLabel("OPCODE (in hexa)");
+        this.consoleLabel = new JLabel("Console Input (in decimal)");
     }
 
     private void applyStylesLabel() {
-        this.gprZeroLabel.setBounds(30,80,200,40);
-        this.gprOneLabel.setBounds(30,150,200,40);
-        this.gprTwoLabel.setBounds(30,220,200,40);
-        this.gprThreeLabel.setBounds(30,290,200,40);
-        this.ixrOneLabel.setBounds(30,420,200,40);
-        this.ixrTwoLabel.setBounds(30,490,200,40);
-        this.ixrThreeLabel.setBounds(30,560,200,40);
-        this.programControlLabel.setBounds(700,80,200,40);
-        this.marLabel.setBounds(700,150,200,40);
-        this.mbrLabel.setBounds(700,220,200,40);
-        this.irLabel.setBounds(700,290,200,40);
-        this.mfrLabel.setBounds(700,360,200,40);
-        this.privilegedLabel.setBounds(700,430,200,40);
-        this. operationsOpcodeLabel.setBounds(170,750,200,40);
+        this.gprZeroLabel.setBounds(30,30,200,40);
+        this.gprOneLabel.setBounds(30,100,200,40);
+        this.gprTwoLabel.setBounds(30,170,200,40);
+        this.gprThreeLabel.setBounds(30,240,200,40);
+        this.ixrOneLabel.setBounds(30,310,200,40);
+        this.ixrTwoLabel.setBounds(30,380,200,40);
+        this.ixrThreeLabel.setBounds(30,450,200,40);
+        this.programControlLabel.setBounds(400,30,200,40);
+        this.marLabel.setBounds(400,100,200,40);
+        this.mbrLabel.setBounds(400,170,200,40);
+        this.irLabel.setBounds(400,240,200,40);
+        this.mfrLabel.setBounds(400,310,200,40);
+        this.privilegedLabel.setBounds(400,380,200,40);
+        this.operationsOpcodeLabel.setBounds(170,750,200,40);
         this.gprOpcodeLabel.setBounds(490,750,200,40);
         this.ixrOpcodeLabel.setBounds(650,750,200,40);
         this.indirectModeOpcodeLabel.setBounds(792,750,200,40);
         this.addressOpcodeLabel.setBounds(990,750,200,40);
-        this.haltLabel.setBounds(1375,650,200,40);
-        this.runLabel.setBounds(1375,710,200,40);
+        this.haltLabel.setBounds(600,650,200,40);
+        this.runLabel.setBounds(600,710,200,40);
+        this.opcodeLabel.setBounds(30,675,200,40);
+        this.consoleLabel.setBounds(900,80,200,40);
     }
 
     private void addLabels() {
@@ -313,6 +340,8 @@ public class GUI extends JFrame {
         add(addressOpcodeLabel);
         add(haltLabel);
         add(runLabel);
+        add(opcodeLabel);
+        add(consoleLabel);
     }
 
     private void updateOrSetAllTextFieldValues() {
@@ -445,7 +474,7 @@ public class GUI extends JFrame {
 
         showMemoryButton.addActionListener(event -> {
             JDialog memoryDialog = new JDialog(this, "Main Memory");
-            JTextArea textArea = new JTextArea();
+            JTextArea textArea = new JTextArea(5,5);
             if ((service.mainMemory == null) || (service.mainMemory.size() == 0)) {
                 textArea.setText("No data in memory. Please upload the IPL.txt file.\n" +
                         "To get updated value, close the dialog and open again.");
@@ -463,7 +492,11 @@ public class GUI extends JFrame {
                 textArea.setText(memoryData+"To get updated value, close the dialog and open again.");
             }
             textArea.setEditable(false);
-            memoryDialog.add(textArea);
+            JScrollPane scroll = new JScrollPane (textArea,
+                    JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+            add(scroll);
+            setVisible(true);
+            memoryDialog.add(scroll);
             memoryDialog.setSize(500, 500);
             memoryDialog.setVisible(true);
         });
@@ -499,5 +532,96 @@ public class GUI extends JFrame {
             }
             updateOrSetAllTextFieldValues();
         });
+
+        programOneButton.addActionListener(event -> {
+            service.simulator.setProgramControl("001D");
+            service.singleStepListener();
+            updateOrSetAllTextFieldValues();
+            programOneControl();
+        });
+
+        controlInputButton.addActionListener(event -> {
+            String instructionCode = CommonUtils.convertBinaryToOctalNumber(
+                    service.simulator.getOpcode().getOperations());
+            String consoleInputText = "";
+            if (instructionCode.equals("61")) {
+                consoleInputText = CommonUtils.convertDecimalToHexadecimal(
+                        consoleInputTextField.getText());
+                service.setDataInMainMemoryByLocation(consoleInputText,
+                        CommonUtils.incrementHexadecimal(programOneMemoryStart, programOneInputCounter));
+                consoleInputTextField.setText("");
+                programOneInputCounter++;
+                service.singleStepListener();
+                updateOrSetAllTextFieldValues();
+                programOneControl();
+            }
+        });
+    }
+
+    private void programOneControl() {
+        String instructionCode = CommonUtils.convertBinaryToOctalNumber(
+                service.simulator.getOpcode().getOperations());
+        while(!instructionCode.equals("61") && !instructionCode.equals("62")) {
+            service.singleStepListener();
+            updateOrSetAllTextFieldValues();
+            instructionCode = CommonUtils.convertBinaryToOctalNumber(
+                    service.simulator.getOpcode().getOperations());
+        }
+        if (instructionCode.equals("61")) {
+            consoleInputHandler();
+        }
+
+        if (instructionCode.equals("62")) {
+            consoleOutputHandler();
+        }
+        updateOrSetAllTextFieldValues();
+    }
+
+    private void consoleInputHandler() {
+        String instructionCode = CommonUtils.convertBinaryToOctalNumber(
+                service.simulator.getOpcode().getOperations());
+        if (programOneInputCounter < 20) {
+            this.consoleOutputTextField.setText("Please enter the input " + (programOneInputCounter+1) +
+                    " and load it");
+        } else {
+            String consoleText = "The numbers you've entered are ...\n";
+            for (int i=0; i<20; i++) {
+                consoleText += CommonUtils.convertHexadecimalToDecimal(service.getDataFromMainMemoryByLocation(
+                        CommonUtils.incrementHexadecimal(programOneMemoryStart, i))) + " ";
+            }
+            consoleText += "\n";
+            this.consoleOutputTextField.setText(consoleText +
+                    "Please enter the exact or closest \nnumber to search and load it");
+        }
+    }
+
+    private void consoleOutputHandler() {
+        int globalDifference = 0;
+        int minValue = 0;
+        int searchValue = CommonUtils.convertHexadecimalToDecimal(
+                service.getDataFromMainMemoryByLocation(programOneSearchLocation));
+
+        String consoleText = "The numbers you've entered are ...\n";
+        for (int i=0; i<20; i++) {
+            String userInputHexadecimal = service.getDataFromMainMemoryByLocation(
+                    CommonUtils.incrementHexadecimal(programOneMemoryStart, i));
+            int userInputDecimal = CommonUtils.convertHexadecimalToDecimal(userInputHexadecimal);
+            int difference = Math.abs(userInputDecimal - searchValue);
+
+            if (i == 0) {
+                globalDifference = difference;
+                minValue = userInputDecimal;
+                consoleText += userInputDecimal + " ";
+                continue;
+            }
+
+            if (difference < globalDifference) {
+                globalDifference = difference;
+                minValue = userInputDecimal;
+            }
+            consoleText += userInputDecimal + " ";
+        }
+        consoleText += "\n";
+        this.consoleOutputTextField.setText(consoleText + "The closest number is "+minValue);
     }
 }
