@@ -116,3 +116,27 @@
 >>> #### 12. SIR: ***Subtract Immediate to Register***
 >>> - ***001C*** - load the value on gpr0
 >>> - Subtract gpr0 and immediate values and store it on gpr0.
+>> ### ***Perform program one:***
+>>
+>>> #### 1. LDR - 001D: ***040A Load Register From Memory***
+>>> - Load the value of 20 to gpr0.
+>>
+>>> #### 2. IN - 001E: ***C400 Input from console keyboard***
+>>> - Get 20 inputs from user.
+>>
+>>> #### 2. IN - 001E: ***C400 Input from console keyboard***
+>>> - Get 20 inputs from user.
+>>
+>>> #### 3. SOB - 001F: ***381E Subtract one and branch***
+>>> - Counter in register gets reduced one by one as user loads inputs.
+>>
+>>> #### 4. IN - 0020: ***C400 Input from console keyboard***
+>>> - Getting the input from user to search the value which is closest.
+>>
+>>> #### 5. OUT - 0021: ***C800 Displaying the closest number in console output display***
+>>> - Displaying the closest number from the set of 20 user inputs in console output display.
+>>
+>>> #### 6. From 0022 to 0035 of memory locations is allocated for user inputs
+>>
+>>> #### 7. 0036 memory location is allocated for user search input
+
