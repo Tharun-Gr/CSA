@@ -60,17 +60,20 @@
 >> ### ***Perform step-by-step instructions for phase 2:***
 >>
 >>> #### 1. JZ - 0010: ***Jump If Zero***
+>>> - Load the value on GPR1.
 >>> - If the value of GPR1 value is empty or zero,
 >>>   then 0001 will be the value of PC because it's the EA.
 >>> - Otherwise, increment the PC by 1.
 >>
 >>> #### 2. JNE - 0011: ***Jump If Not Equal***
+>>> - Load the value on GPR1.
 >>> - If the value of GPR1 value is not equal to empty or zero,
 >>>   then 0001 will be the value of PC because it's the EA.
 >>> - Otherwise, increment the PC by 1.
 >>
 >>> #### 3. JCC: ***Jump If Condition Code***
->>> - ***0012*** - If the GPR is equal to one,
+>>> - Load the value on GPR1.
+>>> - ***0012*** - If the GPR1 is equal to one,
 >>>   then 0001 will be the value of PC because it's the EA.
 >>> - ***0013*** - Otherwise, increment the PC by 1.
 >>
@@ -92,11 +95,11 @@
 >>> - If the subtracted value greater than 0, then set EA value to PC.
 >>> - Otherwise, increment the PC by 1.
 >>
->>> #### 8. SOB: ***Subtract One and Branch***
+>>> #### 8. JGE: ***Jump Greater Than or Equal To***
 >>> - ***0018*** - Load some value in grp3.
->>> - Enter the instruction code. Load and SS the PC.git stat
->>> - It'll subtract by 1 of the gpr3 value.
->>> - If the subtracted value greater than 0, then set EA value to PC.
+>>> - then execute the ss.
+>>> - if the gpr3 is greater than or equal to zero
+>>> - then, set PC as EA
 >>> - Otherwise, increment the PC by 1.
 >>
 >>> #### 9. AMR: ***Add memory to register***
@@ -116,6 +119,41 @@
 >>> #### 12. SIR: ***Subtract Immediate to Register***
 >>> - ***001C*** - load the value on gpr0
 >>> - Subtract gpr0 and immediate values and store it on gpr0.
+>>
+>>> #### 13. MLT: ***Multiply register by register***
+>>> - ***0037*** - Use this memory location
+>>> - load the value on gpr0 and ixr2
+>>> - Then, execute it'll return higher order bits on gpr0
+>>> - and lower order bits on ixr2.
+>>
+>>> #### 14. DVD: ***Divide register by register***
+>>> - ***0038*** - Use this memory location
+>>> - load the value on gpr0 and ixr2
+>>> - Then, execute it'll quotient on gpr0
+>>> - and remainder on ixr2.
+>>
+>>> #### 15. TRR: ***Test the equality***
+>>> - ***0039*** - Use this memory location
+>>> - load the value on gpr0 and ixr2
+>>
+>>> #### 16. AND: ***Logical AND of register and register***
+>>> - ***003A*** - Use this memory location
+>>> - load the value on gpr0 and ixr2
+>>> - Then, execute it'll perform logical AND on both registers
+>>> - and return the value to gpr0.
+>>
+>>> #### 17. ORR: ***Logical Or of Register and Register***
+>>> - ***003B*** - Use this memory location
+>>> - load the value on gpr0 and ixr2
+>>> - Then, execute it'll perform logical OR on both registers
+>>> - and return the value to gpr0.
+>>
+>>> #### 18. NOT: ***Logical Not of Register To Register***
+>>> - ***003B*** - Use this memory location
+>>> - load the value on gpr0
+>>> - Then, execute it'll perform logical NOT on gpr0
+>>> - and return the value to gpr0.
+>>
 >> ### ***Perform program one:***
 >>
 >>> #### 1. LDR - 001D: ***040A Load Register From Memory***
@@ -124,19 +162,22 @@
 >>> #### 2. IN - 001E: ***C400 Input from console keyboard***
 >>> - Get 20 inputs from user.
 >>
->>> #### 2. IN - 001E: ***C400 Input from console keyboard***
+>>> #### 3. IN - 001E: ***C400 Input from console keyboard***
 >>> - Get 20 inputs from user.
 >>
->>> #### 3. SOB - 001F: ***381E Subtract one and branch***
+>>> #### 4. SOB - 001F: ***381E Subtract one and branch***
 >>> - Counter in register gets reduced one by one as user loads inputs.
 >>
->>> #### 4. IN - 0020: ***C400 Input from console keyboard***
+>>> #### 5. IN - 0020: ***C400 Input from console keyboard***
 >>> - Getting the input from user to search the value which is closest.
 >>
->>> #### 5. OUT - 0021: ***C800 Displaying the closest number in console output display***
+>>> #### 6. OUT - 0021: ***C800 Displaying the closest number in console output display***
 >>> - Displaying the closest number from the set of 20 user inputs in console output display.
 >>
->>> #### 6. From 0022 to 0035 of memory locations is allocated for user inputs
+>>> #### 7. From 0022 to 0035 of memory locations is allocated for user inputs
 >>
->>> #### 7. 0036 memory location is allocated for user search input
-
+>>> #### 8. 0036 memory location is allocated for user search input.
+>>
+>> ### ***Cache design***
+>>
+>>> - We've a cache design where we store last 16 lines of instruction for tracing.

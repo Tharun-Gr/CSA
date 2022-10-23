@@ -2,6 +2,8 @@ package main.java.com.gwu.csa.model;
 
 import main.java.com.gwu.csa.util.CommonUtils;
 
+import java.util.Arrays;
+
 public class Simulator {
     private String programControl;
     private String memoryAddressRegister;
@@ -14,6 +16,7 @@ public class Simulator {
     private Opcode opcode;
     private String halt;
     private String run;
+    private int[] ConditionCode;
 
     public Simulator() {
         programControl = "";
@@ -27,6 +30,7 @@ public class Simulator {
         opcode = new Opcode();
         halt = "";
         run = "";
+        ConditionCode = new int[4];
     }
     public String getProgramControl() {
         return programControl;
@@ -116,6 +120,14 @@ public class Simulator {
         this.run = run;
     }
 
+    public int[] getConditionCode() {
+        return ConditionCode;
+    }
+
+    public void setConditionCode(int[] conditionCode) {
+        ConditionCode = conditionCode;
+    }
+
     @Override
     public String toString() {
         return "Simulator{" +
@@ -130,6 +142,7 @@ public class Simulator {
                 ", opcode=" + opcode +
                 ", halt='" + halt + '\'' +
                 ", run='" + run + '\'' +
+                ", ConditionCode=" + Arrays.toString(ConditionCode) +
                 '}';
     }
 }

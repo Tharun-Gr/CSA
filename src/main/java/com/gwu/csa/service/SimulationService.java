@@ -321,6 +321,24 @@ public class SimulationService {
             case "07":
                 performSubtractImmediateToRegisterOperation();
                 break;
+            case "20":
+                performMultiplicationRegisterToRegisterOperation();
+                break;
+            case "21":
+                performDivisionRegisterToRegisterOperation();
+                break;
+            case "22":
+                performTestForEqualityOperation();
+                break;
+            case "23":
+                performAndRegisterToRegisterOperation();
+                break;
+            case "24":
+                performLogicalOrOfRegisterAndRegisterOperation();
+                break;
+            case "25":
+                performLogicalNotOfRegisterOperation();
+                break;
             default:
                 System.out.println("Invalid operations");
         }
@@ -702,5 +720,132 @@ public class SimulationService {
         int subtractedValue = dataFromGPRByOpcodeInDecimal - immediate;
         loadGPRFromOpcode(CommonUtils.convertDecimalToHexadecimal(
                 CommonUtils.convertIntegerToString(subtractedValue)));
+    }
+
+    private String getDataFromGPRByOpcodeForMultiplyAndDivision() {
+        String gprRegisterSelect = simulator.getOpcode().getGeneralPurposeRegister();
+        GeneralPurposeRegister generalPurposeRegister = simulator.getGeneralPurposeRegister();
+        String result = "";
+        if (gprRegisterSelect.equals("00")) {
+            result = generalPurposeRegister.getRegisterZero();
+        }
+        if (gprRegisterSelect.equals("01")) {
+            System.out.println("ERROR: Invalid register selection");
+        }
+        if (gprRegisterSelect.equals("10")) {
+            result = generalPurposeRegister.getRegisterTwo();
+        }
+        return result;
+    }
+
+    private String getDataFromIXRByOpcodeForMultiplyAndDivision() {
+        String ixrRegisterSelect = simulator.getOpcode().getIndexRegister();
+        IndexRegister indexRegister = simulator.getIndexRegister();
+        String result = "";
+        if (ixrRegisterSelect.equals("01")) {
+            System.out.println("ERROR: Invalid register selection");
+        }
+        if (ixrRegisterSelect.equals("10")) {
+            result = indexRegister.getRegisterTwo();
+        }
+        return result;
+    }
+    private void performMultiplicationRegisterToRegisterOperation() {
+        int dataFromGPRByOpcodeInDecimal = CommonUtils.convertHexadecimalToDecimal(
+                getDataFromGPRByOpcodeForMultiplyAndDivision());
+        int dataFromIXRByOpcode = CommonUtils.convertHexadecimalToDecimal(
+                getDataFromIXRByOpcodeForMultiplyAndDivision());
+        int[] cc = simulator.getConditionCode();
+        int multipliedValue = dataFromGPRByOpcodeInDecimal * dataFromIXRByOpcode;
+        if (multipliedValue > 4095) {
+            multipliedValue = multipliedValue % 4095;
+            cc[0] = 1; // This bit indicates overflow
+            simulator.setConditionCode(cc);
+        } else {
+            cc[0] = 0; // This bit indicates overflow
+            simulator.setConditionCode(cc);
+        }
+
+        String multipliedValueInBinary = CommonUtils.convertHexadecimalToBinary(
+                CommonUtils.convertDecimalToHexadecimal(
+                CommonUtils.convertIntegerToString(multipliedValue)));
+
+        String gprLoadValue = CommonUtils.convertBinaryToHexadecimal(multipliedValueInBinary.substring(0,8));  // save in register 0 or 2
+        String ixrLoadValue = CommonUtils.convertBinaryToHexadecimal(multipliedValueInBinary.substring(8,16)); // save in register 1 or 3
+
+        loadGPRFromOpcode(gprLoadValue);
+        loadIndexRegisterFromOpcode(ixrLoadValue);
+    }
+
+    private void performDivisionRegisterToRegisterOperation() {
+        int dividend = CommonUtils.convertHexadecimalToDecimal(getDataFromGPRByOpcodeForMultiplyAndDivision());
+        int divisor = CommonUtils.convertHexadecimalToDecimal(getDataFromIXRByOpcodeForMultiplyAndDivision());
+        int[] cc = simulator.getConditionCode();
+        if (divisor == 0) {
+            System.out.println("ERROR: Invalid divisor");
+            cc[3] = 1;
+            simulator.setConditionCode(cc);
+        } else {
+            cc[3] = 0;
+            simulator.setConditionCode(cc);
+        }
+        int quotient = dividend / divisor;
+        int remainder = dividend % divisor;
+
+        loadGPRFromOpcode(CommonUtils.convertDecimalToHexadecimal(
+                CommonUtils.convertIntegerToString(quotient)));
+        loadIndexRegisterFromOpcode(CommonUtils.convertDecimalToHexadecimal(
+                CommonUtils.convertIntegerToString(remainder)));
+    }
+
+    private void performTestForEqualityOperation(){
+        int dataFromGPRByOpcodeInDecimal = CommonUtils.convertHexadecimalToDecimal(
+                getDataFromGPRByOpcodeForMultiplyAndDivision());
+        int dataFromIXRByOpcode = CommonUtils.convertHexadecimalToDecimal(
+                getDataFromIXRByOpcodeForMultiplyAndDivision());
+        int[] cc = simulator.getConditionCode();
+        if(dataFromGPRByOpcodeInDecimal==dataFromIXRByOpcode){
+            cc[4]=1;
+        }
+        cc[4]=0;
+    }
+
+    /**
+     *
+     */
+    private void performAndRegisterToRegisterOperation(){
+        int dataFromGPRByOpcodeInDecimal = CommonUtils.convertHexadecimalToDecimal(
+                getDataFromGPRByOpcodeForMultiplyAndDivision());
+        int dataFromIXRByOpcode = CommonUtils.convertHexadecimalToDecimal(
+                getDataFromIXRByOpcodeForMultiplyAndDivision());
+        int rx = dataFromGPRByOpcodeInDecimal & dataFromIXRByOpcode;
+        loadGPRFromOpcode(CommonUtils.convertDecimalToHexadecimal(
+                CommonUtils.convertIntegerToString(rx)));
+    }
+
+    /**
+     * Perform logical OR operation for gpr0 and ixr1 registers and store the result on gpr0.
+     */
+    private void performLogicalOrOfRegisterAndRegisterOperation() {
+        int dataFromGPRByOpcodeInDecimal = CommonUtils.convertHexadecimalToDecimal(
+                getDataFromGPRByOpcode());
+        int dataFromIXRByOpcodeInDecimal = CommonUtils.convertHexadecimalToDecimal(
+                getDataFromIXRByOpcode());
+
+        int orValue = dataFromGPRByOpcodeInDecimal | dataFromIXRByOpcodeInDecimal;
+        loadGPRFromOpcode(CommonUtils.convertDecimalToHexadecimal(
+                CommonUtils.convertIntegerToString(orValue)));
+    }
+
+    /**
+     * Perform logical NOT operation for gpr0 register and store the result on gpr0.
+     */
+    private void performLogicalNotOfRegisterOperation() {
+        int dataFromGPRByOpcodeInDecimal = CommonUtils.convertHexadecimalToDecimal(
+                getDataFromGPRByOpcode());
+
+        int notValue = ~dataFromGPRByOpcodeInDecimal;
+        loadGPRFromOpcode(CommonUtils.convertDecimalToHexadecimal(
+                CommonUtils.convertIntegerToString(notValue)));
     }
 }
