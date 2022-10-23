@@ -8,16 +8,17 @@ import main.java.com.gwu.csa.util.CommonUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class SimulationService {
     public List<String> mainMemory;
     public Simulator simulator;
+    public Map<Integer, Map<String, String>> cache;
 
     public SimulationService() {
         this.mainMemory = CommonUtils.initializeMainMemory();
         this.simulator = CommonUtils.setDefaultValuesSimulator();
+        this.cache = new TreeMap<>(Collections.reverseOrder());
     }
 
     /**
@@ -267,6 +268,7 @@ public class SimulationService {
                 simulator.getOpcode().getOperations());
         String octalInProperForm = CommonUtils.convertOctalToProperTwoDigitOctalNumber(operationsCodeInOctal);
         calculateEffectiveAddress();
+        setCache();
         switch (octalInProperForm) {
             case "01":
                 performLoadRegisterFromMemoryOperation();
@@ -322,6 +324,16 @@ public class SimulationService {
             default:
                 System.out.println("Invalid operations");
         }
+    }
+
+    private void setCache() {
+        String tagValue = simulator.getProgramControl();
+        String dataValue = simulator.getMemoryBufferRegister();
+
+        int index = cache.size();
+        Map<String, String> map = new HashMap<>();
+        map.put(tagValue, dataValue);
+        cache.put(index, map);
     }
 
     /**

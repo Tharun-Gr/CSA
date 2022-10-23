@@ -6,6 +6,8 @@ import main.java.com.gwu.csa.util.CommonUtils;
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class GUI extends JFrame {
 
@@ -47,6 +49,7 @@ public class GUI extends JFrame {
     private JTextField runTextField;
     private JTextField consoleInputTextField;
     private JTextArea consoleOutputTextField;
+    private JTextArea cacheTextArea;
     private JLabel gprZeroLabel;
     private JLabel gprOneLabel;
     private JLabel gprTwoLabel;
@@ -69,6 +72,7 @@ public class GUI extends JFrame {
     private JLabel runLabel;
     private JLabel opcodeLabel;
     private JLabel consoleLabel;
+    private JLabel cacheLabel;
     private int programOneInputCounter = 0;
     private String programOneMemoryStart = "0022";
     private String programOneSearchLocation = "0036";
@@ -81,7 +85,6 @@ public class GUI extends JFrame {
         applyFrameStyle();
         updateOrSetAllTextFieldValues();
         addComponentListeners();
-        System.out.println(service.simulator);
     }
 
     private void createGUIComponents() {
@@ -193,6 +196,7 @@ public class GUI extends JFrame {
         this.runTextField = new JTextField();
         this.consoleInputTextField = new JTextField();
         this.consoleOutputTextField = new JTextArea(5,5);
+        this.cacheTextArea = new JTextArea(18,18);
     }
 
     private void applyStylesTextFields() {
@@ -242,10 +246,16 @@ public class GUI extends JFrame {
         this.runTextField.setEditable(false);
 
         this.opcodeTextField.setBounds(150,675,200,50);
+
         this.consoleInputTextField.setBounds(900,125,150,40);
-        this.consoleOutputTextField.setBounds(900, 200, 350, 100);
+
+        this.consoleOutputTextField.setBounds(900, 200, 450, 100);
         this.consoleOutputTextField.setEditable(false);
         this.consoleOutputTextField.setText("Click the program 1 button to execute...");
+
+        this.cacheTextArea.setBounds(1000, 400, 200, 300);
+        this.cacheTextArea.setEditable(false);
+        this.cacheTextArea.setText("             Tag  -  Value");
     }
 
     private void addTextFields() {
@@ -267,6 +277,7 @@ public class GUI extends JFrame {
         add(runTextField);
         add(consoleInputTextField);
         add(consoleOutputTextField);
+        add(cacheTextArea);
     }
 
     private void createLabels() {
@@ -292,6 +303,7 @@ public class GUI extends JFrame {
         this.runLabel = new JLabel("RUN");
         this.opcodeLabel = new JLabel("OPCODE (in hexa)");
         this.consoleLabel = new JLabel("Console Input (in decimal)");
+        this.cacheLabel = new JLabel("Cache");
     }
 
     private void applyStylesLabel() {
@@ -317,6 +329,7 @@ public class GUI extends JFrame {
         this.runLabel.setBounds(600,710,200,40);
         this.opcodeLabel.setBounds(30,675,200,40);
         this.consoleLabel.setBounds(900,80,200,40);
+        this.cacheLabel.setBounds(1000, 220, 200, 300);
     }
 
     private void addLabels() {
@@ -342,16 +355,10 @@ public class GUI extends JFrame {
         add(runLabel);
         add(opcodeLabel);
         add(consoleLabel);
+        add(cacheLabel);
     }
 
     private void updateOrSetAllTextFieldValues() {
-//        String opcode = service.simulator.getOpcode().getOperations() + " "
-//                + service.simulator.getOpcode().getGeneralPurposeRegister() + " "
-//                + service.simulator.getOpcode().getIndexRegister() + " "
-//                + service.simulator.getOpcode().getIndirectMode() + " "
-//                + service.simulator.getOpcode().getAddress();
-//        setComponentValue(this.opcodeTextField, opcode);
-
         setComponentValue(this.programControlTextField, service.simulator.getProgramControl());
         setComponentValue(this.marTextField, service.simulator.getMemoryAddressRegister());
         setComponentValue(this.mbrTextField, service.simulator.getMemoryBufferRegister());
@@ -377,6 +384,26 @@ public class GUI extends JFrame {
 
         setComponentValue(this.haltTextField, service.simulator.getHalt());
         setComponentValue(this.runTextField, service.simulator.getRun());
+
+        cacheUpdate();
+    }
+
+    private void cacheUpdate() {
+        String cacheText = "";
+
+        int counter = 16;
+        for (int key : service.cache.keySet())
+        {
+            if (counter <= 0) {
+                break;
+            }
+            Map<String, String> map = service.cache.get(key);
+            for (String mapKey : map.keySet()) {
+                cacheText += mapKey + "   " + map.get(mapKey) + "\n";
+            }
+            counter--;
+        }
+        this.cacheTextArea.setText(cacheText);
     }
 
     private void setComponentValue(JTextField textFieldComponent, String value) {
