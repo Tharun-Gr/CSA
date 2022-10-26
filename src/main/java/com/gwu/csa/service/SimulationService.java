@@ -344,6 +344,9 @@ public class SimulationService {
         }
     }
 
+    /**
+     * Set data on cache vector
+     */
     private void setCache() {
         String tagValue = simulator.getProgramControl();
         String dataValue = simulator.getMemoryBufferRegister();
@@ -722,6 +725,10 @@ public class SimulationService {
                 CommonUtils.convertIntegerToString(subtractedValue)));
     }
 
+    /**
+     * Getting data from GPR for multiplication and division operations
+     * @return Data from the GPR specific register
+     */
     private String getDataFromGPRByOpcodeForMultiplyAndDivision() {
         String gprRegisterSelect = simulator.getOpcode().getGeneralPurposeRegister();
         GeneralPurposeRegister generalPurposeRegister = simulator.getGeneralPurposeRegister();
@@ -738,6 +745,10 @@ public class SimulationService {
         return result;
     }
 
+    /**
+     * Getting data from IXR for multiplication and division operations
+     * @return Data from the IXR specific register
+     */
     private String getDataFromIXRByOpcodeForMultiplyAndDivision() {
         String ixrRegisterSelect = simulator.getOpcode().getIndexRegister();
         IndexRegister indexRegister = simulator.getIndexRegister();
@@ -750,6 +761,10 @@ public class SimulationService {
         }
         return result;
     }
+
+    /**
+     * Perform multiplication operation between two registers
+     */
     private void performMultiplicationRegisterToRegisterOperation() {
         int dataFromGPRByOpcodeInDecimal = CommonUtils.convertHexadecimalToDecimal(
                 getDataFromGPRByOpcodeForMultiplyAndDivision());
@@ -777,6 +792,9 @@ public class SimulationService {
         loadIndexRegisterFromOpcode(ixrLoadValue);
     }
 
+    /**
+     * Perform division operation between two registers
+     */
     private void performDivisionRegisterToRegisterOperation() {
         int dividend = CommonUtils.convertHexadecimalToDecimal(getDataFromGPRByOpcodeForMultiplyAndDivision());
         int divisor = CommonUtils.convertHexadecimalToDecimal(getDataFromIXRByOpcodeForMultiplyAndDivision());
@@ -798,6 +816,9 @@ public class SimulationService {
                 CommonUtils.convertIntegerToString(remainder)));
     }
 
+    /**
+     * Perform equality test between two registers
+     */
     private void performTestForEqualityOperation(){
         int dataFromGPRByOpcodeInDecimal = CommonUtils.convertHexadecimalToDecimal(
                 getDataFromGPRByOpcodeForMultiplyAndDivision());
@@ -811,7 +832,7 @@ public class SimulationService {
     }
 
     /**
-     *
+     * Performing register to register logical AND operation.
      */
     private void performAndRegisterToRegisterOperation(){
         int dataFromGPRByOpcodeInDecimal = CommonUtils.convertHexadecimalToDecimal(

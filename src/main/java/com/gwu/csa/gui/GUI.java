@@ -77,6 +77,9 @@ public class GUI extends JFrame {
     private String programOneMemoryStart = "0022";
     private String programOneSearchLocation = "0036";
 
+    /**
+     * GUI component initialization
+     */
     public GUI() {
         this.service = new SimulationService();
         createGUIComponents();
@@ -87,30 +90,46 @@ public class GUI extends JFrame {
         addComponentListeners();
     }
 
+
+    /**
+     * Create GUI components
+     */
     private void createGUIComponents() {
         createButtons();
         createTextFields();
         createLabels();
     }
 
+    /**
+     * Applying styles to GUI components
+     */
     private void applyStylesGUIComponents() {
         applyButtonStyles();
         applyStylesTextFields();
         applyStylesLabel();
     }
 
+    /**
+     * Add GUI components to JFrame
+     */
     private void addGUIComponentsInFrame() {
         addButtons();
         addTextFields();
         addLabels();
     }
 
+    /**
+     * Applying GUI JFrame styles
+     */
     private void applyFrameStyle() {
         setSize(300,400);
         setLayout(null);
         setVisible(true);
     }
 
+    /**
+     * Create GUI button components
+     */
     private void createButtons() {
         this.pcLoadButton = new JButton("LOAD");
         this.marLoadButton = new JButton("LOAD");
@@ -133,6 +152,9 @@ public class GUI extends JFrame {
         this.controlInputButton = new JButton("Load Input");
     }
 
+    /**
+     * Apply styles to GUI button components
+     */
     private void applyButtonStyles() {
         this.pcLoadButton.setBounds(650,30,70, 40);
         this.marLoadButton.setBounds(650,100,70, 40);
@@ -155,6 +177,9 @@ public class GUI extends JFrame {
         this.controlInputButton.setBounds(1070,125,100,40);
     }
 
+    /**
+     * Adding GUI button components
+     */
     private void addButtons() {
         add(pcLoadButton);
         add(marLoadButton);
@@ -177,6 +202,9 @@ public class GUI extends JFrame {
         add(controlInputButton);
     }
 
+    /**
+     * Creating GUI button components
+     */
     private void createTextFields() {
         this.opcodeTextField = new JTextField();
         this.programControlTextField = new JTextField();
@@ -199,6 +227,9 @@ public class GUI extends JFrame {
         this.cacheTextArea = new JTextArea(18,18);
     }
 
+    /**
+     * Adding styles to GUI text field components
+     */
     private void applyStylesTextFields() {
         this.programControlTextField.setBounds(500,30,100,40);
         this.programControlTextField.setEditable(false);
@@ -258,6 +289,9 @@ public class GUI extends JFrame {
         this.cacheTextArea.setText("             Tag  -  Value");
     }
 
+    /**
+     * Adding GUI text field components
+     */
     private void addTextFields() {
         add(opcodeTextField);
         add(programControlTextField);
@@ -280,6 +314,9 @@ public class GUI extends JFrame {
         add(cacheTextArea);
     }
 
+    /**
+     * Creating GUI label components
+     */
     private void createLabels() {
         this.gprZeroLabel = new JLabel("GPR  0");
         this.gprOneLabel = new JLabel("GPR  1");
@@ -306,6 +343,9 @@ public class GUI extends JFrame {
         this.cacheLabel = new JLabel("Cache");
     }
 
+    /**
+     * Adding styles to GUI label components
+     */
     private void applyStylesLabel() {
         this.gprZeroLabel.setBounds(30,30,200,40);
         this.gprOneLabel.setBounds(30,100,200,40);
@@ -332,6 +372,9 @@ public class GUI extends JFrame {
         this.cacheLabel.setBounds(1000, 220, 200, 300);
     }
 
+    /**
+     * Adding GUI label components
+     */
     private void addLabels() {
         add(gprZeroLabel);
         add(gprOneLabel);
@@ -358,6 +401,9 @@ public class GUI extends JFrame {
         add(cacheLabel);
     }
 
+    /**
+     * Update all the text field values
+     */
     private void updateOrSetAllTextFieldValues() {
         setComponentValue(this.programControlTextField, service.simulator.getProgramControl());
         setComponentValue(this.marTextField, service.simulator.getMemoryAddressRegister());
@@ -388,6 +434,9 @@ public class GUI extends JFrame {
         cacheUpdate();
     }
 
+    /**
+     * Update cache data text field
+     */
     private void cacheUpdate() {
         String cacheText = "";
 
@@ -406,6 +455,9 @@ public class GUI extends JFrame {
         this.cacheTextArea.setText(cacheText);
     }
 
+    /**
+     * Set the specific component value
+     */
     private void setComponentValue(JTextField textFieldComponent, String value) {
         if (!isValidValue(value)) {
             value = "";
@@ -424,7 +476,13 @@ public class GUI extends JFrame {
         }
         return true;
     }
+
+    /**
+     * Listeners for all the buttons in the GUI
+     */
     private void addComponentListeners() {
+
+        // Program control load button listener.
         pcLoadButton.addActionListener(event -> {
             //Exits listener if the value from opcode text field is empty or invalid.
             if (!isValidValue(opcodeTextField.getText())) return;
@@ -432,18 +490,21 @@ public class GUI extends JFrame {
             setComponentValue(programControlTextField, service.simulator.getProgramControl());
         });
 
+        // MAR load button listener.
         marLoadButton.addActionListener(event -> {
             if (!isValidValue(opcodeTextField.getText())) return;
             service.memoryAddressRegisterListener(opcodeTextField.getText());
             setComponentValue(marTextField, service.simulator.getMemoryAddressRegister());
         });
 
+        // MBR load button listener.
         mbrLoadButton.addActionListener(event -> {
             if (!isValidValue(opcodeTextField.getText())) return;
             service.memoryBufferRegisterListener(opcodeTextField.getText());
             setComponentValue(mbrTextField, service.simulator.getMemoryBufferRegister());
         });
 
+        // GPR Zero load button listener.
         gprZeroLoadButton.addActionListener(event -> {
             if (!isValidValue(opcodeTextField.getText())) return;
             service.gprZeroListener(opcodeTextField.getText());
@@ -451,6 +512,7 @@ public class GUI extends JFrame {
                     service.simulator.getGeneralPurposeRegister().getRegisterZero());
         });
 
+        // GPR One load button listener.
         gprOneLoadButton.addActionListener(event -> {
             if (!isValidValue(opcodeTextField.getText())) return;
             service.gprOneListener(opcodeTextField.getText());
@@ -458,6 +520,7 @@ public class GUI extends JFrame {
                     service.simulator.getGeneralPurposeRegister().getRegisterOne());
         });
 
+        // GPR Two load button listener.
         gprTwoLoadButton.addActionListener(event -> {
             if (!isValidValue(opcodeTextField.getText())) return;
             service.gprTwoListener(opcodeTextField.getText());
@@ -465,6 +528,7 @@ public class GUI extends JFrame {
                     service.simulator.getGeneralPurposeRegister().getRegisterTwo());
         });
 
+        // GPR Three load button listener.
         gprThreeLoadButton.addActionListener(event -> {
             if (!isValidValue(opcodeTextField.getText())) return;
             service.gprThreeListener(opcodeTextField.getText());
@@ -472,6 +536,7 @@ public class GUI extends JFrame {
                     service.simulator.getGeneralPurposeRegister().getRegisterThree());
         });
 
+        // IXR One load button listener.
         ixrOneLoadButton.addActionListener(event -> {
             if (!isValidValue(opcodeTextField.getText())) return;
             service.ixrOneListener(opcodeTextField.getText());
@@ -479,6 +544,7 @@ public class GUI extends JFrame {
                     service.simulator.getIndexRegister().getRegisterOne());
         });
 
+        // IXR two load button listener.
         ixrTwoLoadButton.addActionListener(event -> {
             if (!isValidValue(opcodeTextField.getText())) return;
             service.ixrTwoListener(opcodeTextField.getText());
@@ -486,6 +552,7 @@ public class GUI extends JFrame {
                     service.simulator.getIndexRegister().getRegisterTwo());
         });
 
+        // IXR three load button listener.
         ixrThreeLoadButton.addActionListener(event -> {
             if (!isValidValue(opcodeTextField.getText())) return;
             service.ixrThreeListener(opcodeTextField.getText());
@@ -493,12 +560,14 @@ public class GUI extends JFrame {
                     service.simulator.getIndexRegister().getRegisterThree());
         });
 
+        // Main load button listener.
         mainLoadButton.addActionListener(event -> {
             if (!isValidValue(service.simulator.getMemoryAddressRegister())) return;
             service.mainLoadButtonListener();
             setComponentValue(mbrTextField, service.simulator.getMemoryBufferRegister());
         });
 
+        // Show memory button listener.
         showMemoryButton.addActionListener(event -> {
             JDialog memoryDialog = new JDialog(this, "Main Memory");
             JTextArea textArea = new JTextArea(5,5);
@@ -528,27 +597,32 @@ public class GUI extends JFrame {
             memoryDialog.setVisible(true);
         });
 
+        // Main store button listener.
         storeButton.addActionListener(event -> {
             if (!isValidValue(service.simulator.getMemoryBufferRegister())) return;
             if (!isValidValue(service.simulator.getMemoryAddressRegister())) return;
             service.mainStoreButtonListener();
         });
 
+        // Main store plus button listener.
         storePlusButton.addActionListener(event -> {
 
         });
 
+        // Single step button listener.
         singleStepButton.addActionListener(event -> {
             if (!isValidValue(service.simulator.getProgramControl())) return;
             service.singleStepListener();
             updateOrSetAllTextFieldValues();
         });
 
+        // Run button listener.
         runButton.addActionListener(event -> {
             service.runListener();
             updateOrSetAllTextFieldValues();
         });
 
+        // Init button listener.
         initButton.addActionListener(event -> {
             JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
             int returnValue = fileChooser.showOpenDialog(null);
@@ -560,6 +634,7 @@ public class GUI extends JFrame {
             updateOrSetAllTextFieldValues();
         });
 
+        // Program one button listener.
         programOneButton.addActionListener(event -> {
             service.simulator.setProgramControl("001D");
             service.singleStepListener();
@@ -567,6 +642,7 @@ public class GUI extends JFrame {
             programOneControl();
         });
 
+        // Console input button listener.
         controlInputButton.addActionListener(event -> {
             String instructionCode = CommonUtils.convertBinaryToOctalNumber(
                     service.simulator.getOpcode().getOperations());
@@ -585,6 +661,9 @@ public class GUI extends JFrame {
         });
     }
 
+    /**
+     * Program one instruction execution.
+     */
     private void programOneControl() {
         String instructionCode = CommonUtils.convertBinaryToOctalNumber(
                 service.simulator.getOpcode().getOperations());
@@ -604,6 +683,9 @@ public class GUI extends JFrame {
         updateOrSetAllTextFieldValues();
     }
 
+    /**
+     * Console input handler.
+     */
     private void consoleInputHandler() {
         String instructionCode = CommonUtils.convertBinaryToOctalNumber(
                 service.simulator.getOpcode().getOperations());
@@ -622,6 +704,9 @@ public class GUI extends JFrame {
         }
     }
 
+    /**
+     * Console outputs handler.
+     */
     private void consoleOutputHandler() {
         int globalDifference = 0;
         int minValue = 0;
