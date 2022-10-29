@@ -59,66 +59,69 @@
 >>> - So, the value 0008 gets loaded to memory location 0008.
 >> ### ***Perform step-by-step instructions for phase 2:***
 >>
->>> #### 1. JZ - 0010: ***Jump If Zero***
->>> - Load the value on GPR1.
->>> - If the value of GPR1 value is empty or zero,
->>>   then 0001 will be the value of PC because it's the EA.
->>> - Otherwise, increment the PC by 1.
+>>> #### 1. JZ - 000A: ***Jump If Zero***
+>>> - Load the value 0010 on PC and load some value on the GPR0.
+>>> - If the value of the GPR0 is empty or zero, then 0001 will be the value
+      of the program counter because it's the effective address.
+>>> - Otherwise, increment the program counter by 1.
 >>
 >>> #### 2. JNE - 0011: ***Jump If Not Equal***
->>> - Load the value on GPR1.
->>> - If the value of GPR1 value is not equal to empty or zero,
->>>   then 0001 will be the value of PC because it's the EA.
->>> - Otherwise, increment the PC by 1.
+>>> - Load the value 0011 on PC and load some value on the GPR0.
+>>> - If the value of the GPR0 is not equal to empty or zero, then 0001 will
+      be the value of the program counter because it's the effective address.
+>>> - Otherwise, increment the program counter by 1.
 >>
 >>> #### 3. JCC: ***Jump If Condition Code***
->>> - Load the value on GPR1.
->>> - ***0012*** - If the GPR1 is equal to one,
->>>   then 0001 will be the value of PC because it's the EA.
->>> - ***0013*** - Otherwise, increment the PC by 1.
+>>> - Load the value of 0012 on PC.
+>>> - Increment the PC by 1 because cc = 0.
+>>> - Load the value of 0013 on PC.
+>>> - 0001 will be the value of PC as EA because cc = 1.
 >>
 >>> #### 4. JMA: ***Unconditional Jump To Address***
->>> - ***0014*** - Sets EA to PC as default.
+>>> - Load the value of 0014 on PC.
+>>> - Then, PC = 0001.
 >>
 >>> #### 5. JSR: ***Jump and save return***
->>> - ***0015*** - Increment PC by 1 and stored it in GPR3.
->>> - Then, sets PC as EA.
+>>> - Load the value of 0015 on PC.
+>>> - Increment PC by 1 and stored it in GPR3.
+>>> - Then, sets EA to PC.
 >>
 >>> #### 6. RFS: ***Return from sub routine***
->>> - ***0016*** - Load/have some value in gpr3 and load 0016 to pc.
->>> - Then, execute the SS, it will set the gpr3 value to pc.
+>>> - Load the value of 0016 on PC.
+>>> - Load some value on GPR3.
+>>> - Then, sets GPR3 to PC.
 >>
 >>> #### 7. SOB: ***Subtract One and Branch***
->>> - ***0017*** - Load some value in grp3.
->>> - Enter the instruction code. Load and SS the PC.
->>> - It'll subtract by 1 of the gpr3 value.
->>> - If the subtracted value greater than 0, then set EA value to PC.
+>>> - Load the value of 0017 on PC.
+>>> - Load some value on GPR3.
+>>> - If GPR3 - 1 >= 0. Then, Set EA to PC.
 >>> - Otherwise, increment the PC by 1.
 >>
 >>> #### 8. JGE: ***Jump Greater Than or Equal To***
->>> - ***0018*** - Load some value in grp3.
->>> - then execute the ss.
->>> - if the gpr3 is greater than or equal to zero
->>> - then, set PC as EA
+>>> - Load the value of 0018 on PC.
+>>> - Load some value on GPR3.
+>>> - If GPR3 >= 0. Then, Set EA to PC.
 >>> - Otherwise, increment the PC by 1.
 >>
 >>> #### 9. AMR: ***Add memory to register***
->>> - ***0019*** - Load some value in grp0.
->>> - grp0 value will add up to EA.
->>> - The sum value will be stored in grp0.
+>>> - Load the value of 0019 on PC.
+>>> - Load some value on GPR0.
+>>> - GPR0 + EA value sets to GPR0
 >>
->>> #### 10. AMR: ***Add memory to register***
->>> - ***001A*** - Load some value in grp0.
->>> - grp0 value will add up to EA.
->>> - The sum value will be stored in grp0.
+>>> #### 10. SMR: ***Subtract Memory From Register***
+>>> - Load the value of 0019 on PC.
+>>> - Load some value on GPR0.
+>>> - GPR0 - EA value sets to GPR0
 >>
 >>> #### 11. AIR: ***Add Immediate to Register***
->>> - ***001B*** - load the value on gpr0
->>> - Add gpr0 and immediate values and store it on gpr0.
+>>> - Load the value of 001B on PC.
+>>> - Load some value on GPR0.
+>>> - GPR0 + Immed value sets to GPR0
 >>
 >>> #### 12. SIR: ***Subtract Immediate to Register***
->>> - ***001C*** - load the value on gpr0
->>> - Subtract gpr0 and immediate values and store it on gpr0.
+>>> - Load the value of 001C on PC.
+>>> - Load some value on GPR0.
+>>> - GPR0 0 - Immed value sets to GPR0.
 >>
 >>> #### 13. MLT: ***Multiply register by register***
 >>> - ***0037*** - Use this memory location

@@ -339,6 +339,12 @@ public class SimulationService {
             case "25":
                 performLogicalNotOfRegisterOperation();
                 break;
+            case "31":
+                performShiftRegisterByCount();
+                break;
+            case "32":
+                performRotateRegisterByCount();
+                break;
             default:
                 System.out.println("Invalid operations");
         }
@@ -672,7 +678,6 @@ public class SimulationService {
                 getDataFromGPRByOpcode());
         int effectiveAddressValue = CommonUtils.convertHexadecimalToDecimal(
                 simulator.getOpcode().getEffectiveAddress());
-
         int sumValue = dataFromGPRByOpcodeInDecimal + effectiveAddressValue;
         loadGPRFromOpcode(CommonUtils.convertDecimalToHexadecimal(
                 CommonUtils.convertIntegerToString(sumValue)));
@@ -706,7 +711,7 @@ public class SimulationService {
         int immediate = CommonUtils.convertHexadecimalToDecimal(
                 simulator.getOpcode().getEffectiveAddress());
 
-        int sumValue = dataFromGPRByOpcodeInDecimal - immediate;
+        int sumValue = dataFromGPRByOpcodeInDecimal + immediate;
         loadGPRFromOpcode(CommonUtils.convertDecimalToHexadecimal(
                 CommonUtils.convertIntegerToString(sumValue)));
     }
@@ -868,5 +873,59 @@ public class SimulationService {
         int notValue = ~dataFromGPRByOpcodeInDecimal;
         loadGPRFromOpcode(CommonUtils.convertDecimalToHexadecimal(
                 CommonUtils.convertIntegerToString(notValue)));
+    }
+
+    /**
+     * Shift register by count
+     */
+    private void performShiftRegisterByCount() {
+        int dataFromGPRByOpcodeInDecimal = CommonUtils.convertHexadecimalToDecimal(
+                getDataFromGPRByOpcode());
+        String ixrRegisterSelect = simulator.getOpcode().getIndexRegister();
+        int AL = CommonUtils.convertStringToInteger(ixrRegisterSelect.substring(0,1));
+        int LR = CommonUtils.convertStringToInteger(ixrRegisterSelect.substring(1,2));
+        int count = CommonUtils.convertHexadecimalToDecimal(simulator.getOpcode().getEffectiveAddress());
+        int Shift;
+        if (AL==1 && LR==1)
+        {
+            Shift = dataFromGPRByOpcodeInDecimal<<count;
+        }
+        else if (AL==1 && LR==0)
+        {
+            Shift = dataFromGPRByOpcodeInDecimal>>>count;
+        }
+        else if (AL==0 && LR==1)
+        {
+            Shift = dataFromGPRByOpcodeInDecimal<<count;
+        }
+        else
+        {
+            Shift = dataFromGPRByOpcodeInDecimal>>count;
+        }
+        loadGPRFromOpcode(CommonUtils.convertDecimalToHexadecimal(
+                CommonUtils.convertIntegerToString(Shift)));
+    }
+
+    /**
+     * Rotate register by count
+     */
+    private void performRotateRegisterByCount() {
+        int dataFromGPRByOpcodeInDecimal = CommonUtils.convertHexadecimalToDecimal(
+                getDataFromGPRByOpcode());
+        String ixrRegisterSelect = simulator.getOpcode().getIndexRegister();
+        int AL = CommonUtils.convertStringToInteger(ixrRegisterSelect.substring(0,1));
+        int LR = CommonUtils.convertStringToInteger(ixrRegisterSelect.substring(1,2));
+        int count = CommonUtils.convertHexadecimalToDecimal(simulator.getOpcode().getEffectiveAddress());
+        int Rotate = 0;
+        if (AL==1 && LR==1)
+        {
+            Rotate = (dataFromGPRByOpcodeInDecimal << count) | (dataFromGPRByOpcodeInDecimal >> (32 - count));
+        }
+        else if (AL==1 && LR==0)
+        {
+            Rotate = (dataFromGPRByOpcodeInDecimal >> count) | (dataFromGPRByOpcodeInDecimal << (32 - count));
+        }
+        loadGPRFromOpcode(CommonUtils.convertDecimalToHexadecimal(
+                CommonUtils.convertIntegerToString(Rotate)));
     }
 }
