@@ -9,7 +9,7 @@ public class Opcode {
     private String indirectMode;
     private String address;
     private String effectiveAddress;
-
+    private Boolean incrementAlways;
     private Boolean shouldIncrementPC;
 
     Opcode() {
@@ -19,6 +19,7 @@ public class Opcode {
         indirectMode = "";
         address = "";
         shouldIncrementPC = true;
+        incrementAlways = false;
     }
     public String getOperations() {
         return operations;
@@ -76,6 +77,13 @@ public class Opcode {
         this.shouldIncrementPC = shouldIncrementPC;
     }
 
+    public boolean isIncrementAlways() {
+        return incrementAlways;
+    }
+
+    public void setIncrementAlways(boolean incrementAlways) {
+        this.incrementAlways = incrementAlways;
+    }
     @Override
     public String toString() {
         return "Opcode{" +

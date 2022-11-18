@@ -5,6 +5,7 @@ import main.java.com.gwu.csa.util.CommonUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
+import java.awt.*;
 import java.io.File;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -30,6 +31,7 @@ public class GUI extends JFrame {
     private JButton runButton;
     private JButton showMemoryButton;
     private JButton programOneButton;
+    private JButton programTwoButton;
     private JButton controlInputButton;
     private JTextField opcodeTextField;
     private JTextField programControlTextField;
@@ -76,6 +78,9 @@ public class GUI extends JFrame {
     private int programOneInputCounter = 0;
     private String programOneMemoryStart = "0022";
     private String programOneSearchLocation = "0036";
+    private String searchedWord = "";
+    private int wordNumber = 0;
+    private int lineNumber = 0;
 
     /**
      * GUI component initialization
@@ -149,6 +154,7 @@ public class GUI extends JFrame {
         this.runButton = new JButton("RUN");
         this.showMemoryButton = new JButton("Show memory");
         this.programOneButton = new JButton("Program 1");
+        this.programTwoButton = new JButton("Program 2");
         this.controlInputButton = new JButton("Load Input");
     }
 
@@ -174,6 +180,7 @@ public class GUI extends JFrame {
         this.singleStepButton.setBounds(400,650,50,100);
         this.runButton.setBounds(500,650,50,100);
         this.programOneButton.setBounds(900,30,100, 40);
+        this.programTwoButton.setBounds(1000,30,100, 40);
         this.controlInputButton.setBounds(1070,125,100,40);
     }
 
@@ -199,6 +206,7 @@ public class GUI extends JFrame {
         add(singleStepButton);
         add(runButton);
         add(programOneButton);
+        add(programTwoButton);
         add(controlInputButton);
     }
 
@@ -282,7 +290,11 @@ public class GUI extends JFrame {
 
         this.consoleOutputTextField.setBounds(900, 200, 450, 100);
         this.consoleOutputTextField.setEditable(false);
-        this.consoleOutputTextField.setText("Click the program 1 button to execute...");
+        this.consoleOutputTextField.setText("***Load the IPL.txt file before any execution of instructions***\n" +
+                "To execute the programs, please make sure you've loaded\n" +
+                "IPL.txt for program one or \n" +
+                "Program_two_instructions.txt for program two \n" +
+                "Then click the Program buttons to execute.");
 
         this.cacheTextArea.setBounds(1000, 400, 200, 300);
         this.cacheTextArea.setEditable(false);
@@ -624,12 +636,9 @@ public class GUI extends JFrame {
 
         // Init button listener.
         initButton.addActionListener(event -> {
-            JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-            int returnValue = fileChooser.showOpenDialog(null);
-            System.out.println(returnValue);
-            if (returnValue == JFileChooser.APPROVE_OPTION) {
-                File selectedFile = fileChooser.getSelectedFile();
-                service.readInputFile(selectedFile.getAbsolutePath());
+            String fileLocation = getFileLocationFromUser();
+            if (!fileLocation.equals("")) {
+                service.readInputFile(fileLocation);
             }
             updateOrSetAllTextFieldValues();
         });
@@ -644,20 +653,25 @@ public class GUI extends JFrame {
 
         // Console input button listener.
         controlInputButton.addActionListener(event -> {
-            String instructionCode = CommonUtils.convertBinaryToOctalNumber(
-                    service.simulator.getOpcode().getOperations());
-            String consoleInputText = "";
-            if (instructionCode.equals("61")) {
-                consoleInputText = CommonUtils.convertDecimalToHexadecimal(
-                        consoleInputTextField.getText());
-                service.setDataInMainMemoryByLocation(consoleInputText,
-                        CommonUtils.incrementHexadecimal(programOneMemoryStart, programOneInputCounter));
-                consoleInputTextField.setText("");
-                programOneInputCounter++;
-                service.singleStepListener();
-                updateOrSetAllTextFieldValues();
-                programOneControl();
+            int programSelect = CommonUtils.convertBinaryToDecimal(
+                    service.simulator.getOpcode().getGeneralPurposeRegister());
+            if (programSelect == 0) {
+                consoleInputForProgramOne();
+                return;
             }
+            consoleInputHandlerForProgramTwo();
+        });
+
+        // Program two button listener.
+        programTwoButton.addActionListener(event -> {
+            String fileLocation = getFileLocationFromUser();
+            if (!fileLocation.equals("")) {
+                service.readInputFileForProgramTwo(fileLocation);
+            }
+            service.simulator.setProgramControl("0000");
+            service.singleStepListener();
+            programTwoControl();
+            updateOrSetAllTextFieldValues();
         });
     }
 
@@ -684,11 +698,29 @@ public class GUI extends JFrame {
     }
 
     /**
+     * Handles all the logics need to perform for program onw.
+     */
+    private void consoleInputForProgramOne() {
+        String instructionCode = CommonUtils.convertBinaryToOctalNumber(
+                service.simulator.getOpcode().getOperations());
+        String consoleInputText = "";
+        if (instructionCode.equals("61")) {
+            consoleInputText = CommonUtils.convertDecimalToHexadecimal(
+                    consoleInputTextField.getText());
+            service.setDataInMainMemoryByLocation(consoleInputText,
+                    CommonUtils.incrementHexadecimal(programOneMemoryStart, programOneInputCounter));
+            consoleInputTextField.setText("");
+            programOneInputCounter++;
+            service.singleStepListener();
+            updateOrSetAllTextFieldValues();
+            programOneControl();
+        }
+    }
+
+    /**
      * Console input handler.
      */
     private void consoleInputHandler() {
-        String instructionCode = CommonUtils.convertBinaryToOctalNumber(
-                service.simulator.getOpcode().getOperations());
         if (programOneInputCounter < 20) {
             this.consoleOutputTextField.setText("Please enter the input " + (programOneInputCounter+1) +
                     " and load it");
@@ -735,5 +767,88 @@ public class GUI extends JFrame {
         }
         consoleText += "\n";
         this.consoleOutputTextField.setText(consoleText + "The closest number is "+minValue);
+    }
+
+    /**
+     * Input for program two.
+     */
+    private void programTwoControl() {
+        String inputInstruction = "\n***Please enter the word to be search in console input***";
+        this.consoleOutputTextField.setText(service.simulator.getParagraphString() + inputInstruction);
+    }
+
+    /**
+     * Handles all the logics need to perform for program two.
+     */
+    private void consoleInputHandlerForProgramTwo() {
+        String inputFromConsole = consoleInputTextField.getText();
+        service.mainMemory.add(13, "0");
+        service.mainMemory.add(14, inputFromConsole);
+        String instructionCode = CommonUtils.convertBinaryToOctalNumber(
+                service.simulator.getOpcode().getOperations());
+        while(CommonUtils.convertHexadecimalToDecimal(
+                service.simulator.getGeneralPurposeRegister().getRegisterTwo()) <
+                service.mainMemory.size()) {
+            if (instructionCode.equals("62")) {
+                String success ="Found the word " + searchedWord + "\n"
+                        + "Sentence number is " + lineNumber + "\n"
+                        + "word number in sentence " + wordNumber;
+                consoleOutputTextField.setText(success);
+                return;
+            }
+            if (instructionCode.equals("22")) {
+                compareValues();
+            }
+            if (instructionCode.equals("2")) {
+                service.simulator.getIndexRegister().setRegisterTwo("0000");
+            }
+            service.singleStepListener();
+            instructionCode = CommonUtils.convertBinaryToOctalNumber(
+                    service.simulator.getOpcode().getOperations());
+        }
+        String failure ="Word not found!!";
+        consoleOutputTextField.setText(failure);
+        updateOrSetAllTextFieldValues();
+    }
+
+    /**
+     * Comparing the GPR0 and IXR2 values for word searching.
+     */
+    private void compareValues() {
+        String dataFromGPRByOpcodeInDecimal = service.getDataFromGPRByOpcodeForMultiplyAndDivision();
+        String contentFromGPR = service.mainMemory.get(
+                CommonUtils.convertHexadecimalToDecimal(
+                        dataFromGPRByOpcodeInDecimal));
+
+        String dataFromIXRByOpcode = service.getDataFromIXRByOpcodeForMultiplyAndDivision();
+        String contentFromIXR = service.mainMemory.get(
+                CommonUtils.convertHexadecimalToDecimal(
+                        dataFromIXRByOpcode));
+        int[] cc = service.simulator.getConditionCode();
+        if (contentFromGPR.equals(contentFromIXR.substring(4))) {
+            searchedWord = contentFromIXR.substring(4);
+            lineNumber = CommonUtils.convertStringToInteger(contentFromIXR.substring(0,1));
+            wordNumber = CommonUtils.convertStringToInteger(contentFromIXR.substring(2,3));
+            cc[3] = 1;
+            service.simulator.setConditionCode(cc);
+            return;
+        }
+        cc[3] = 0;
+        service.simulator.setConditionCode(cc);
+    }
+
+    /**
+     * Get the file location from the user
+     * @return File location
+     */
+    private String getFileLocationFromUser() {
+        JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+        int returnValue = fileChooser.showOpenDialog(null);
+        String fileLocation = "";
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            fileLocation = selectedFile.getAbsolutePath();
+        }
+        return fileLocation;
     }
 }

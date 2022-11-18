@@ -217,6 +217,34 @@ public class SimulationService {
     }
 
     /**
+     * Reading the program 2 file
+     * @param fileLocation File path of program two
+     */
+    public void readInputFileForProgramTwo(String fileLocation) {
+        try {
+            File inputFile = new File(fileLocation);
+            Scanner myReader = new Scanner(inputFile);
+            int lineCount = 0;
+            while (myReader.hasNextLine()) {
+                lineCount++;
+                String data = myReader.nextLine();
+                simulator.setParagraphString(simulator.getParagraphString() + data + "\n");
+                String[] words = data.split(" ");
+                int wordCount = 0;
+                for (String word : words) {
+                    wordCount++;
+                    String memoryWord = lineCount + "#" + wordCount + "@" + word;
+                    mainMemory.add(memoryWord);
+                }
+            }
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Reading data from the file
      * @param data current line
      */
@@ -367,19 +395,18 @@ public class SimulationService {
      * Calculating effective address
      */
     private void calculateEffectiveAddress() {
+        String addressInHexadecimal = CommonUtils.convertBinaryToHexadecimal(
+                simulator.getOpcode().getAddress());
         if (simulator.getOpcode().getIndexRegister().equals("00")) {
             if (simulator.getOpcode().getIndirectMode().equals("0")) {
-                String effectiveAddressInHexadecimal = CommonUtils.convertBinaryToHexadecimal(
-                        simulator.getOpcode().getAddress());
-                simulator.getOpcode().setEffectiveAddress(effectiveAddressInHexadecimal);
+                simulator.getOpcode().setEffectiveAddress(addressInHexadecimal);
                 return;
             }
-            String addressInHexadecimal = CommonUtils.convertBinaryToHexadecimal(
-                    simulator.getOpcode().getAddress());
             String dataFromMainMemory = getDataFromMainMemoryByLocation(addressInHexadecimal);
             simulator.getOpcode().setEffectiveAddress(dataFromMainMemory);
             return;
         }
+
         if (simulator.getOpcode().getIndirectMode().equals("0")) {
             calculateEffectiveAddressForFalseIndirectMode();
             return;
@@ -395,8 +422,10 @@ public class SimulationService {
                 simulator.getOpcode().getAddress());
         int indexRegisterDataInDecimalInteger = CommonUtils.convertHexadecimalToDecimal(
                 getDataFromIndexRegisterByAddress());
+
         int calculatedEffectiveAddressInDecimal = effectiveAddressInDecimal +
                 indexRegisterDataInDecimalInteger;
+
         String calculatedEffectiveAddressInDecimalString = CommonUtils.convertIntegerToString(
                 calculatedEffectiveAddressInDecimal);
         String calculatedEffectiveAddressInHexadecimal = CommonUtils.convertDecimalToHexadecimal(
@@ -410,22 +439,19 @@ public class SimulationService {
     private void calculateEffectiveAddressForTrueIndirectMode() {
         int indexRegisterDataInDecimal = CommonUtils.convertHexadecimalToDecimal(
                 getDataFromIndexRegisterByAddress());
-        int addressInOpcodeInDecimalInteger = CommonUtils.convertBinaryToDecimal(
+
+        String addressInHexadecimal = CommonUtils.convertBinaryToHexadecimal(
                 simulator.getOpcode().getAddress());
-        String addressInOpcodeInDecimalString = CommonUtils.convertIntegerToString(addressInOpcodeInDecimalInteger);
-        String addressInOpcodeInHexadecimalString = CommonUtils.convertDecimalToHexadecimal(addressInOpcodeInDecimalString);
-        String effectiveAddressDataFromMemoryInHexadecimal = getDataFromMainMemoryByLocation(
-                addressInOpcodeInHexadecimalString);
-        int effectiveAddressDataFromMemoryInDecimalInteger = CommonUtils.convertHexadecimalToDecimal(
-                effectiveAddressDataFromMemoryInHexadecimal);
-        int preCalculatedEffectiveAddressInDecimalInteger = indexRegisterDataInDecimal +
-                effectiveAddressDataFromMemoryInDecimalInteger;
-        String preCalculatedEffectiveAddressInDecimalString = CommonUtils.convertIntegerToString(
-                preCalculatedEffectiveAddressInDecimalInteger);
-        String preCalculatedEffectiveAddressInHexadecimalString = CommonUtils.convertDecimalToHexadecimal(
-                preCalculatedEffectiveAddressInDecimalString);
-        String calculatedEffectiveAddressInHexadecimal = getDataFromMainMemoryByLocation(
-                preCalculatedEffectiveAddressInHexadecimalString);
+        String dataFromMainMemory = getDataFromMainMemoryByLocation(addressInHexadecimal);
+        int dataFromMainMemoryInDecimal = CommonUtils.convertHexadecimalToDecimal(dataFromMainMemory);
+
+        int calculatedEffectiveAddressInDecimal = indexRegisterDataInDecimal +
+                dataFromMainMemoryInDecimal;
+
+        String calculatedEffectiveAddressInDecimalString = CommonUtils.convertIntegerToString(
+                calculatedEffectiveAddressInDecimal);
+        String calculatedEffectiveAddressInHexadecimal = CommonUtils.convertDecimalToHexadecimal(
+                calculatedEffectiveAddressInDecimalString);
         simulator.getOpcode().setEffectiveAddress(calculatedEffectiveAddressInHexadecimal);
     }
 
@@ -599,7 +625,8 @@ public class SimulationService {
      */
     private void performJumpIfConditionCodeOperation() {
         String gprRegisterSelect = simulator.getOpcode().getGeneralPurposeRegister();
-        if (gprRegisterSelect.equals("01")) {
+        int[] cc = simulator.getConditionCode();
+        if (gprRegisterSelect.equals("11") && (cc[3] == 1)) {
             simulator.setProgramControl(simulator.getOpcode().getEffectiveAddress());
             simulator.getOpcode().setShouldIncrementPC(false);
         }
@@ -734,7 +761,7 @@ public class SimulationService {
      * Getting data from GPR for multiplication and division operations
      * @return Data from the GPR specific register
      */
-    private String getDataFromGPRByOpcodeForMultiplyAndDivision() {
+    public String getDataFromGPRByOpcodeForMultiplyAndDivision() {
         String gprRegisterSelect = simulator.getOpcode().getGeneralPurposeRegister();
         GeneralPurposeRegister generalPurposeRegister = simulator.getGeneralPurposeRegister();
         String result = "";
@@ -754,7 +781,7 @@ public class SimulationService {
      * Getting data from IXR for multiplication and division operations
      * @return Data from the IXR specific register
      */
-    private String getDataFromIXRByOpcodeForMultiplyAndDivision() {
+    public String getDataFromIXRByOpcodeForMultiplyAndDivision() {
         String ixrRegisterSelect = simulator.getOpcode().getIndexRegister();
         IndexRegister indexRegister = simulator.getIndexRegister();
         String result = "";
@@ -831,9 +858,9 @@ public class SimulationService {
                 getDataFromIXRByOpcodeForMultiplyAndDivision());
         int[] cc = simulator.getConditionCode();
         if(dataFromGPRByOpcodeInDecimal==dataFromIXRByOpcode){
-            cc[4]=1;
+            cc[3]=1;
         }
-        cc[4]=0;
+        cc[3]=0;
     }
 
     /**

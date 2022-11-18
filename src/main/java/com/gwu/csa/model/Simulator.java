@@ -17,6 +17,7 @@ public class Simulator {
     private String halt;
     private String run;
     private int[] ConditionCode;
+    private String paragraphString;
 
     public Simulator() {
         programControl = "";
@@ -31,6 +32,7 @@ public class Simulator {
         halt = "";
         run = "";
         ConditionCode = new int[4];
+        paragraphString = "";
     }
     public String getProgramControl() {
         return programControl;
@@ -128,6 +130,14 @@ public class Simulator {
         ConditionCode = conditionCode;
     }
 
+    public String getParagraphString() {
+        return paragraphString;
+    }
+
+    public void setParagraphString(String paragraphString) {
+        this.paragraphString = paragraphString;
+    }
+
     @Override
     public String toString() {
         return "Simulator{" +
@@ -143,6 +153,7 @@ public class Simulator {
                 ", halt='" + halt + '\'' +
                 ", run='" + run + '\'' +
                 ", ConditionCode=" + Arrays.toString(ConditionCode) +
+                ", paragraphString='" + paragraphString + '\'' +
                 '}';
     }
 }

@@ -15,6 +15,7 @@ public class CommonUtils {
     }
 
     public static int convertHexadecimalToDecimal(String value) {
+        if (value.equals("")) return 0;
         return Integer.parseInt(value,16);
     }
 
