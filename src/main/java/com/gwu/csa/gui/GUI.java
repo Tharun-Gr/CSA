@@ -5,14 +5,12 @@ import main.java.com.gwu.csa.util.CommonUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
-import java.awt.*;
 import java.io.File;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class GUI extends JFrame {
 
-    private final SimulationService service;
+    private SimulationService service;
     private JButton pcLoadButton;
     private JButton marLoadButton;
     private JButton mbrLoadButton;
@@ -413,10 +411,47 @@ public class GUI extends JFrame {
         add(cacheLabel);
     }
 
+    private void haltOperation() {
+        if (service.simulator.getProgramControl().equals("0007")) {
+            service.simulator.setHalt("1");
+            service.simulator.setRun("0");
+        } else {
+            service.simulator.setHalt("0");
+            service.simulator.setRun("1");
+        }
+    }
+
+    private void mfrOperations() {
+        String memoryLocation = service.simulator.getProgramControl();
+        if (memoryLocation.equals("000b")) {
+            service.simulator.setMemoryFaultRegister("0001");
+            return;
+        }
+
+        if (memoryLocation.equals("000c")) {
+            service.simulator.setMemoryFaultRegister("0010");
+            return;
+        }
+
+        if (memoryLocation.equals("000d")) {
+            service.simulator.setMemoryFaultRegister("0100");
+            return;
+        }
+
+        if (memoryLocation.equals("000e")) {
+            service.simulator.setMemoryFaultRegister("1000");
+            return;
+        }
+
+        service.simulator.setMemoryFaultRegister("");
+    }
+
     /**
      * Update all the text field values
      */
-    private void updateOrSetAllTextFieldValues() {
+    public void updateOrSetAllTextFieldValues() {
+        haltOperation();
+        mfrOperations();
         setComponentValue(this.programControlTextField, service.simulator.getProgramControl());
         setComponentValue(this.marTextField, service.simulator.getMemoryAddressRegister());
         setComponentValue(this.mbrTextField, service.simulator.getMemoryBufferRegister());
@@ -637,6 +672,7 @@ public class GUI extends JFrame {
         // Init button listener.
         initButton.addActionListener(event -> {
             String fileLocation = getFileLocationFromUser();
+            this.service = new SimulationService();
             if (!fileLocation.equals("")) {
                 service.readInputFile(fileLocation);
             }
@@ -668,7 +704,7 @@ public class GUI extends JFrame {
             if (!fileLocation.equals("")) {
                 service.readInputFileForProgramTwo(fileLocation);
             }
-            service.simulator.setProgramControl("0000");
+            service.simulator.setProgramControl("000F");
             service.singleStepListener();
             programTwoControl();
             updateOrSetAllTextFieldValues();
@@ -782,8 +818,8 @@ public class GUI extends JFrame {
      */
     private void consoleInputHandlerForProgramTwo() {
         String inputFromConsole = consoleInputTextField.getText();
-        service.mainMemory.add(13, "0");
-        service.mainMemory.add(14, inputFromConsole);
+        service.mainMemory.add(28, "0");
+        service.mainMemory.add(29, inputFromConsole);
         String instructionCode = CommonUtils.convertBinaryToOctalNumber(
                 service.simulator.getOpcode().getOperations());
         while(CommonUtils.convertHexadecimalToDecimal(

@@ -137,10 +137,52 @@ public class SimulationService {
      * @param memoryLocation Memory location of main memory
      */
     public void setDataInMainMemoryByLocation(String memoryData, String memoryLocation) {
+        if (isMFR()) {
+            return;
+        }
         int memoryDataInDecimal = CommonUtils.convertHexadecimalToDecimal(memoryData);
         String memoryDataInDecimalString = CommonUtils.convertIntegerToString(memoryDataInDecimal);
         int memoryLocationInDecimal = CommonUtils.convertHexadecimalToDecimal(memoryLocation);
         mainMemory.set(memoryLocationInDecimal,memoryDataInDecimalString);
+    }
+
+    /**
+     * Listens main store button and
+     * once clicked storing the value to main memory from memory buffer register data and
+     * memory address register as a location of main memory.
+     * @param memoryData Memory content to be stored in main memory
+     * @param memoryLocation Memory location of main memory
+     */
+    private void setDataInMainMemoryByLocationForRoutine(String memoryData, String memoryLocation) {
+        int memoryDataInDecimal = CommonUtils.convertHexadecimalToDecimal(memoryData);
+        String memoryDataInDecimalString = CommonUtils.convertIntegerToString(memoryDataInDecimal);
+        int memoryLocationInDecimal = CommonUtils.convertHexadecimalToDecimal(memoryLocation);
+        mainMemory.set(memoryLocationInDecimal,memoryDataInDecimalString);
+    }
+
+    private boolean isMFR() {
+        String memoryLocation = CommonUtils.convertHexadecimalNumberInFourDigits(
+                simulator.getOpcode().getEffectiveAddress());
+        int memoryLocationInDecimal = CommonUtils.convertHexadecimalToDecimal(simulator.getProgramControl());
+        String nextMemoryLocationInHexadecimal = CommonUtils.convertDecimalToHexadecimal(
+                CommonUtils.convertIntegerToString(
+                memoryLocationInDecimal+1));
+
+        if (memoryLocation.equals("0000") ||
+                memoryLocation.equals("0001") ||
+                memoryLocation.equals("0002") ||
+                memoryLocation.equals("0003") ||
+                memoryLocation.equals("0004") ||
+                memoryLocation.equals("0005")) {
+            setDataInMainMemoryByLocationForRoutine(nextMemoryLocationInHexadecimal, "0004");
+            simulator.setProgramControl("0001");
+            singleStepListener();
+            singleStepListener();
+            simulator.setProgramControl(getDataFromMainMemoryByLocation("0004"));
+            simulator.getOpcode().setShouldIncrementPC(false);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -211,7 +253,7 @@ public class SimulationService {
             }
             myReader.close();
         } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
+//            System.out.println("An error occurred.");
             e.printStackTrace();
         }
     }
@@ -239,7 +281,7 @@ public class SimulationService {
             }
             myReader.close();
         } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
+//            System.out.println("An error occurred.");
             e.printStackTrace();
         }
     }
@@ -373,9 +415,35 @@ public class SimulationService {
             case "32":
                 performRotateRegisterByCount();
                 break;
+            case "00":
+                performHaltOperation();
+                break;
+            case "30":
+                performTrapOperation();
+                break;
             default:
-                System.out.println("Invalid operations");
+//                System.out.println("Invalid operations");
         }
+    }
+
+    private void performTrapOperation() {
+//        System.out.println("Trap operation");
+
+        int memoryLocationInDecimal = CommonUtils.convertHexadecimalToDecimal(simulator.getProgramControl());
+        String nextMemoryLocationInHexadecimal = CommonUtils.convertDecimalToHexadecimal(
+                CommonUtils.convertIntegerToString(
+                        memoryLocationInDecimal+1));
+
+        setDataInMainMemoryByLocationForRoutine(nextMemoryLocationInHexadecimal, "0002");
+        simulator.setProgramControl("0000");
+        singleStepListener();
+        singleStepListener();
+        simulator.setProgramControl(getDataFromMainMemoryByLocation("0002"));
+        simulator.getOpcode().setShouldIncrementPC(false);
+    }
+
+    private void performHaltOperation() {
+//        System.out.println("Halt operation");
     }
 
     /**
@@ -769,7 +837,7 @@ public class SimulationService {
             result = generalPurposeRegister.getRegisterZero();
         }
         if (gprRegisterSelect.equals("01")) {
-            System.out.println("ERROR: Invalid register selection");
+//            System.out.println("ERROR: Invalid register selection");
         }
         if (gprRegisterSelect.equals("10")) {
             result = generalPurposeRegister.getRegisterTwo();
@@ -786,7 +854,7 @@ public class SimulationService {
         IndexRegister indexRegister = simulator.getIndexRegister();
         String result = "";
         if (ixrRegisterSelect.equals("01")) {
-            System.out.println("ERROR: Invalid register selection");
+//            System.out.println("ERROR: Invalid register selection");
         }
         if (ixrRegisterSelect.equals("10")) {
             result = indexRegister.getRegisterTwo();
@@ -832,7 +900,7 @@ public class SimulationService {
         int divisor = CommonUtils.convertHexadecimalToDecimal(getDataFromIXRByOpcodeForMultiplyAndDivision());
         int[] cc = simulator.getConditionCode();
         if (divisor == 0) {
-            System.out.println("ERROR: Invalid divisor");
+//            System.out.println("ERROR: Invalid divisor");
             cc[3] = 1;
             simulator.setConditionCode(cc);
         } else {
