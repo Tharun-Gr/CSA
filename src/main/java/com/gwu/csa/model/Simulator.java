@@ -18,6 +18,24 @@ public class Simulator {
     private String run;
     private int[] ConditionCode;
     private String paragraphString;
+    private String FR0;
+    private String FR1;
+
+    public String getFR0() {
+        return FR0;
+    }
+
+    public void setFR0(String FR0) {
+        this.FR0 = FR0;
+    }
+
+    public String getFR1() {
+        return FR1;
+    }
+
+    public void setFR1(String FR1) {
+        this.FR1 = FR1;
+    }
 
     public Simulator() {
         programControl = "";
@@ -154,6 +172,8 @@ public class Simulator {
                 ", run='" + run + '\'' +
                 ", ConditionCode=" + Arrays.toString(ConditionCode) +
                 ", paragraphString='" + paragraphString + '\'' +
+                ", FR0='" + FR0 + '\'' +
+                ", FR1='" + FR1 + '\'' +
                 '}';
     }
 }

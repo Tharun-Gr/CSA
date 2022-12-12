@@ -49,6 +49,24 @@ public class SimulationService {
     }
 
     /**
+     * Listens the fr0 register load button and once clicked setting the value from switches
+     * to fr0 register.
+     * @param value It's in the type of hexadecimal
+     */
+    public void fr0LoadListener(String value) {
+        simulator.setFR0(value);
+    }
+
+    /**
+     * Listens the fr1 register load button and once clicked setting the value from switches
+     * to fr1 register.
+     * @param value It's in the type of hexadecimal
+     */
+    public void fr1LoadListener(String value) {
+        simulator.setFR1(value);
+    }
+
+    /**
      * Listens the general purpose register zero load button and
      * once clicked setting the value from switches to general purpose register zero.
      * @param value It's in the type of hexadecimal
@@ -292,7 +310,12 @@ public class SimulationService {
      */
     private void readDataFromFile(String data) {
         String memoryLocation = data.substring(0,4);
-        String memoryData = data.substring(5,9);
+        String memoryData = "";
+        if (data.length() == 13) {
+            memoryData = data.substring(5,13);
+        } else {
+            memoryData = data.substring(5,9);
+        }
         addDataInMainMemoryByLocation(memoryData, memoryLocation);
     }
 
@@ -420,6 +443,15 @@ public class SimulationService {
                 break;
             case "30":
                 performTrapOperation();
+                break;
+            case "33":
+                performFloatingAddOperation();
+                break;
+            case "34":
+                performFloatingSubOperation();
+                break;
+            case "35":
+                performVectorAddOperation();
                 break;
             default:
 //                System.out.println("Invalid operations");
@@ -1022,5 +1054,77 @@ public class SimulationService {
         }
         loadGPRFromOpcode(CommonUtils.convertDecimalToHexadecimal(
                 CommonUtils.convertIntegerToString(Rotate)));
+    }
+
+    private String getDataFromFR() {
+        String frSelect = simulator.getOpcode().getGeneralPurposeRegister();
+        if (frSelect.equals("01")) {
+            return simulator.getFR1();
+        }
+        return simulator.getFR0();
+    }
+
+    private void performFloatingAddOperation() {
+        String frSelectDataInBinaryFloat = getDataFromFR();
+
+        int intBits = Float.floatToIntBits(Float.parseFloat(frSelectDataInBinaryFloat));
+        String binary = Integer.toBinaryString(intBits);
+        int binaryToBitsConversionFR = Integer.parseInt(binary, 2);
+        float calculatedFloatFromFR = Float.intBitsToFloat(binaryToBitsConversionFR);
+
+        String memory1Hexadecimal = getDataFromMainMemoryByLocation(
+                simulator.getOpcode().getEffectiveAddress());
+        String memory2Hexadecimal = getDataFromMainMemoryByLocation("0001");
+        String memoryBinary = CommonUtils.convertFullHexadecimalToBinary(memory1Hexadecimal+memory2Hexadecimal);
+        int binaryToBitsConversion = Integer.parseInt(memoryBinary, 2);
+        float calculatedFloatFromMemory = Float.intBitsToFloat(binaryToBitsConversion);
+
+        float sum = calculatedFloatFromFR + calculatedFloatFromMemory;
+        simulator.setFR0(String.valueOf(sum));
+    }
+
+    private float calculateFloatFromBinary(String floatNumberInBinary) {
+        int intBits = Float.floatToIntBits(Float.parseFloat(floatNumberInBinary));
+        String binary = Integer.toBinaryString(intBits);
+
+        int binaryToBitsConversion = Integer.parseInt(binary, 2);
+        float calculatedFloat = Float.intBitsToFloat(binaryToBitsConversion);
+        return calculatedFloat;
+    }
+
+    private void performFloatingSubOperation() {
+        String frSelectDataInBinaryFloat = getDataFromFR();
+
+        int intBits = Float.floatToIntBits(Float.parseFloat(frSelectDataInBinaryFloat));
+        String binary = Integer.toBinaryString(intBits);
+        int binaryToBitsConversionFR = Integer.parseInt(binary, 2);
+        float calculatedFloatFromFR = Float.intBitsToFloat(binaryToBitsConversionFR);
+
+        String memory1Hexadecimal = getDataFromMainMemoryByLocation(
+                simulator.getOpcode().getEffectiveAddress());
+        String memory2Hexadecimal = getDataFromMainMemoryByLocation("0001");
+        String memoryBinary = CommonUtils.convertFullHexadecimalToBinary(memory1Hexadecimal+memory2Hexadecimal);
+        int binaryToBitsConversion = Integer.parseInt(memoryBinary, 2);
+        float calculatedFloatFromMemory = Float.intBitsToFloat(binaryToBitsConversion);
+
+        float diff = calculatedFloatFromFR - calculatedFloatFromMemory;
+        System.out.println("diff"+diff);
+        simulator.setFR0(String.valueOf(diff));
+    }
+
+    private void performVectorAddOperation() {
+        String memoryHexadecimal = getDataFromMainMemoryByLocation(
+                simulator.getOpcode().getEffectiveAddress());
+        String memoryBinary = CommonUtils.convertFullHexadecimalToBinary(memoryHexadecimal);
+        int binaryToBitsConversion = Integer.parseInt(memoryBinary, 2);
+        float calculatedFloatFromMemory = Float.intBitsToFloat(binaryToBitsConversion);
+
+        String memory2Hexadecimal = getDataFromMainMemoryByLocation(
+                simulator.getOpcode().getEffectiveAddress());
+        String memory2Binary = CommonUtils.convertFullHexadecimalToBinary(memory2Hexadecimal);
+        int binaryToBitsConversion2 = Integer.parseInt(memory2Binary, 2);
+        float calculatedFloatFromMemory2 = Float.intBitsToFloat(binaryToBitsConversion2);
+
+        float sum = calculatedFloatFromMemory + calculatedFloatFromMemory2;
     }
 }

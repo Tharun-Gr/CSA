@@ -40,6 +40,11 @@ public class CommonUtils {
         return ("0000000000000000" + binaryString).substring(binaryString.length());
     }
 
+    public static String convertFullHexadecimalToBinary(String value) {
+        String binaryString = Integer.toBinaryString(convertHexadecimalToDecimal(value));
+        return ("00000000000000000000000000000000" + binaryString).substring(binaryString.length());
+    }
+
     public static String convertBinaryToOctalNumber(String value) {
         return Integer.toOctalString(convertBinaryToDecimal(value));
     }

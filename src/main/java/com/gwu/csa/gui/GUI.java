@@ -21,6 +21,9 @@ public class GUI extends JFrame {
     private JButton ixrOneLoadButton;
     private JButton ixrTwoLoadButton;
     private JButton ixrThreeLoadButton;
+    private JButton fr0LoadButton;
+    private JButton fr1LoadButton;
+
     private JButton storeButton;
     private JButton storePlusButton;
     private JButton mainLoadButton;
@@ -37,7 +40,10 @@ public class GUI extends JFrame {
     private JTextField mbrTextField;
     private JTextField irTextField;
     private JTextField mfrTextField;
-    private JTextField privilegedTextField;
+//    private JTextField privilegedTextField;
+    private JTextField floatingRegister0;
+    private JTextField floatingRegister1;
+
     private JTextField gprZeroTextField;
     private JTextField gprOneTextField;
     private JTextField gprTwoTextField;
@@ -62,7 +68,7 @@ public class GUI extends JFrame {
     private JLabel mbrLabel;
     private JLabel irLabel;
     private JLabel mfrLabel;
-    private JLabel privilegedLabel;
+//    private JLabel privilegedLabel;
     private JLabel operationsOpcodeLabel;
     private JLabel gprOpcodeLabel;
     private JLabel ixrOpcodeLabel;
@@ -73,6 +79,8 @@ public class GUI extends JFrame {
     private JLabel opcodeLabel;
     private JLabel consoleLabel;
     private JLabel cacheLabel;
+    private JLabel floatingRegister0Label;
+    private JLabel floatingRegister1Label;
     private int programOneInputCounter = 0;
     private String programOneMemoryStart = "0022";
     private String programOneSearchLocation = "0036";
@@ -137,6 +145,8 @@ public class GUI extends JFrame {
         this.pcLoadButton = new JButton("LOAD");
         this.marLoadButton = new JButton("LOAD");
         this.mbrLoadButton = new JButton("LOAD");
+        this.fr0LoadButton = new JButton("LOAD");
+        this.fr1LoadButton = new JButton("LOAD");
         this.gprZeroLoadButton = new JButton("LOAD");
         this.gprOneLoadButton = new JButton("LOAD");
         this.gprTwoLoadButton = new JButton("LOAD");
@@ -163,6 +173,8 @@ public class GUI extends JFrame {
         this.pcLoadButton.setBounds(650,30,70, 40);
         this.marLoadButton.setBounds(650,100,70, 40);
         this.mbrLoadButton.setBounds(650,170,70, 40);
+        this.fr0LoadButton.setBounds(650,380,70, 40);
+        this.fr1LoadButton.setBounds(650,450,70, 40);
         this.gprZeroLoadButton.setBounds(230,30,70, 40);
         this.gprOneLoadButton.setBounds(230,100,70, 40);
         this.gprTwoLoadButton.setBounds(230,170,70, 40);
@@ -189,6 +201,8 @@ public class GUI extends JFrame {
         add(pcLoadButton);
         add(marLoadButton);
         add(mbrLoadButton);
+        add(fr0LoadButton);
+        add(fr1LoadButton);
         add(gprZeroLoadButton);
         add(gprOneLoadButton);
         add(gprTwoLoadButton);
@@ -218,7 +232,7 @@ public class GUI extends JFrame {
         this.mbrTextField = new JTextField();
         this.irTextField = new JTextField();
         this.mfrTextField = new JTextField();
-        this.privilegedTextField = new JTextField();
+//        this.privilegedTextField = new JTextField();
         this.gprZeroTextField = new JTextField();
         this.gprOneTextField = new JTextField();
         this.gprTwoTextField = new JTextField();
@@ -231,6 +245,8 @@ public class GUI extends JFrame {
         this.consoleInputTextField = new JTextField();
         this.consoleOutputTextField = new JTextArea(5,5);
         this.cacheTextArea = new JTextArea(18,18);
+        this.floatingRegister0 = new JTextField();
+        this.floatingRegister1 = new JTextField();
     }
 
     /**
@@ -252,8 +268,14 @@ public class GUI extends JFrame {
         this.mfrTextField.setBounds(500,310,100,40);
         this.mfrTextField.setEditable(false);
 
-        this.privilegedTextField.setBounds(500,380,100,40);
-        this.privilegedTextField.setEditable(false);
+//        this.privilegedTextField.setBounds(500,380,100,40);
+//        this.privilegedTextField.setEditable(false);
+
+        this.floatingRegister0.setBounds(500,380,100,40);
+        this.floatingRegister0.setEditable(false);
+
+        this.floatingRegister1.setBounds(500,450,100,40);
+        this.floatingRegister1.setEditable(false);
 
         this.gprZeroTextField.setBounds(100,30,100,40);
         this.gprZeroTextField.setEditable(false);
@@ -309,7 +331,7 @@ public class GUI extends JFrame {
         add(mbrTextField);
         add(irTextField);
         add(mfrTextField);
-        add(privilegedTextField);
+//        add(privilegedTextField);
         add(gprZeroTextField);
         add(gprOneTextField);
         add(gprTwoTextField);
@@ -322,6 +344,8 @@ public class GUI extends JFrame {
         add(consoleInputTextField);
         add(consoleOutputTextField);
         add(cacheTextArea);
+        add(floatingRegister0);
+        add(floatingRegister1);
     }
 
     /**
@@ -340,7 +364,8 @@ public class GUI extends JFrame {
         this.mbrLabel = new JLabel("MBR");
         this.irLabel = new JLabel("IR");
         this.mfrLabel = new JLabel("MFR");
-        this.privilegedLabel = new JLabel("PRIVILEGED");
+//        this.privilegedLabel = new JLabel("PRIVILEGED");
+        this.operationsOpcodeLabel = new JLabel("OPERATIONS");
         this.operationsOpcodeLabel = new JLabel("OPERATIONS");
         this.gprOpcodeLabel = new JLabel("GPR");
         this.ixrOpcodeLabel = new JLabel("IXR");
@@ -351,6 +376,8 @@ public class GUI extends JFrame {
         this.opcodeLabel = new JLabel("OPCODE (in hexa)");
         this.consoleLabel = new JLabel("Console Input (in decimal)");
         this.cacheLabel = new JLabel("Cache");
+        this.floatingRegister0Label = new JLabel("FR0");
+        this.floatingRegister1Label = new JLabel("FR1");
     }
 
     /**
@@ -369,7 +396,7 @@ public class GUI extends JFrame {
         this.mbrLabel.setBounds(400,170,200,40);
         this.irLabel.setBounds(400,240,200,40);
         this.mfrLabel.setBounds(400,310,200,40);
-        this.privilegedLabel.setBounds(400,380,200,40);
+//        this.privilegedLabel.setBounds(400,380,200,40);
         this.operationsOpcodeLabel.setBounds(170,750,200,40);
         this.gprOpcodeLabel.setBounds(490,750,200,40);
         this.ixrOpcodeLabel.setBounds(650,750,200,40);
@@ -380,6 +407,8 @@ public class GUI extends JFrame {
         this.opcodeLabel.setBounds(30,675,200,40);
         this.consoleLabel.setBounds(900,80,200,40);
         this.cacheLabel.setBounds(1000, 220, 200, 300);
+        this.floatingRegister0Label.setBounds(400,380,200,40);
+        this.floatingRegister1Label.setBounds(400,450,200,40);
     }
 
     /**
@@ -398,7 +427,7 @@ public class GUI extends JFrame {
         add(mbrLabel);
         add(irLabel);
         add(mfrLabel);
-        add(privilegedLabel);
+//        add(privilegedLabel);
         add(operationsOpcodeLabel);
         add(gprOpcodeLabel);
         add(ixrOpcodeLabel);
@@ -409,6 +438,8 @@ public class GUI extends JFrame {
         add(opcodeLabel);
         add(consoleLabel);
         add(cacheLabel);
+        add(floatingRegister0Label);
+        add(floatingRegister1Label);
     }
 
     private void haltOperation() {
@@ -450,6 +481,7 @@ public class GUI extends JFrame {
      * Update all the text field values
      */
     public void updateOrSetAllTextFieldValues() {
+        System.out.println("Update" + service.simulator.getFR0());
         haltOperation();
         mfrOperations();
         setComponentValue(this.programControlTextField, service.simulator.getProgramControl());
@@ -457,7 +489,9 @@ public class GUI extends JFrame {
         setComponentValue(this.mbrTextField, service.simulator.getMemoryBufferRegister());
         setComponentValue(this.irTextField, service.simulator.getInstructionRegister());
         setComponentValue(this.mfrTextField, service.simulator.getMemoryFaultRegister());
-        setComponentValue(this.privilegedTextField, service.simulator.getPrivileged());
+        setComponentValue(this.floatingRegister0, service.simulator.getFR0());
+        setComponentValue(this.floatingRegister1, service.simulator.getFR1());
+//        setComponentValue(this.privilegedTextField, service.simulator.getPrivileged());
 
         setComponentValue(this.gprZeroTextField,
                 service.simulator.getGeneralPurposeRegister().getRegisterZero());
@@ -549,6 +583,18 @@ public class GUI extends JFrame {
             if (!isValidValue(opcodeTextField.getText())) return;
             service.memoryBufferRegisterListener(opcodeTextField.getText());
             setComponentValue(mbrTextField, service.simulator.getMemoryBufferRegister());
+        });
+
+        fr0LoadButton.addActionListener(event -> {
+            if (!isValidValue(opcodeTextField.getText())) return;
+            service.fr0LoadListener(opcodeTextField.getText());
+            setComponentValue(floatingRegister0, service.simulator.getFR0());
+        });
+
+        fr1LoadButton.addActionListener(event -> {
+            if (!isValidValue(opcodeTextField.getText())) return;
+            service.fr1LoadListener(opcodeTextField.getText());
+            setComponentValue(floatingRegister1, service.simulator.getFR1());
         });
 
         // GPR Zero load button listener.
