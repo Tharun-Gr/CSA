@@ -155,9 +155,9 @@ public class SimulationService {
      * @param memoryLocation Memory location of main memory
      */
     public void setDataInMainMemoryByLocation(String memoryData, String memoryLocation) {
-        if (isMFR()) {
-            return;
-        }
+//        if (isMFR()) {
+//            return;
+//        }
         int memoryDataInDecimal = CommonUtils.convertHexadecimalToDecimal(memoryData);
         String memoryDataInDecimalString = CommonUtils.convertIntegerToString(memoryDataInDecimal);
         int memoryLocationInDecimal = CommonUtils.convertHexadecimalToDecimal(memoryLocation);
@@ -455,6 +455,15 @@ public class SimulationService {
                 break;
             case "36":
                 performVectorSubOperation();
+                break;
+            case "50":
+                performLoadFloatingOperation();
+                break;
+            case "51":
+                performStoreFloatingOperation();
+                break;
+            case "37":
+                performConvertFloatingOperation();
                 break;
             default:
 //                System.out.println("Invalid operations");
@@ -1059,6 +1068,10 @@ public class SimulationService {
                 CommonUtils.convertIntegerToString(Rotate)));
     }
 
+    /**
+     * Get data from the floating point register
+     * @return Data in the register
+     */
     private String getDataFromFR() {
         String frSelect = simulator.getOpcode().getGeneralPurposeRegister();
         if (frSelect.equals("01")) {
@@ -1067,6 +1080,9 @@ public class SimulationService {
         return simulator.getFR0();
     }
 
+    /**
+     * Adding two floating point numbers
+     */
     private void performFloatingAddOperation() {
         String frSelectDataInBinaryFloat = getDataFromFR();
 
@@ -1087,6 +1103,11 @@ public class SimulationService {
         simulator.setFR0(String.valueOf(sum));
     }
 
+    /**
+     * Calculating the floating or encoding from the binary values
+     * @param floatNumberInBinary binary value to encode
+     * @return Returns the floating number
+     */
     private float calculateFloatFromBinary(String floatNumberInBinary) {
         int intBits = Float.floatToIntBits(Float.parseFloat(floatNumberInBinary));
         String binary = Integer.toBinaryString(intBits);
@@ -1096,6 +1117,9 @@ public class SimulationService {
         return calculatedFloat;
     }
 
+    /**
+     * Subtracting two floating point numbers
+     */
     private void performFloatingSubOperation() {
         String frSelectDataInBinaryFloat = getDataFromFR();
 
@@ -1116,6 +1140,9 @@ public class SimulationService {
         simulator.setFR0(String.valueOf(diff));
     }
 
+    /**
+     * Adding two vectors
+     */
     private void performVectorAddOperation() {
         String memory1Hexadecimal = getDataFromMainMemoryByLocation(
                 simulator.getOpcode().getEffectiveAddress());
@@ -1137,6 +1164,9 @@ public class SimulationService {
         simulator.setFR0(String.valueOf(sum));
     }
 
+    /**
+     * Subtracting two vectors
+     */
     private void performVectorSubOperation() {
         String memory1Hexadecimal = getDataFromMainMemoryByLocation(
                 simulator.getOpcode().getEffectiveAddress());
@@ -1156,5 +1186,51 @@ public class SimulationService {
 
         float diff = calculatedFloatFromMemory1 - calculatedFloatFromMemory2;
         simulator.setFR0(String.valueOf(diff));
+    }
+
+    /**
+     * Loading the floating point number in the register
+     */
+    private void performLoadFloatingOperation() {
+        String memory1Hexadecimal = getDataFromMainMemoryByLocation(
+                simulator.getOpcode().getEffectiveAddress());
+        String memory2Hexadecimal = getDataFromMainMemoryByLocation(CommonUtils.incrementHexadecimal(
+                simulator.getOpcode().getEffectiveAddress(),1));
+        String memoryBinary = CommonUtils.convertFullHexadecimalToBinary(
+                memory1Hexadecimal+memory2Hexadecimal);
+        int binaryToBitsConversion = Integer.parseInt(memoryBinary, 2);
+        float calculatedFloatFromMemory = Float.intBitsToFloat(binaryToBitsConversion);
+
+        simulator.setFR0(String.valueOf(calculatedFloatFromMemory));
+    }
+
+    /**
+     * Storing the floating point number to the memory
+     */
+    private void performStoreFloatingOperation() {
+        String frSelectDataInBinaryFloat = getDataFromFR();
+
+        int intBits = Float.floatToIntBits(Float.parseFloat(frSelectDataInBinaryFloat));
+        String binary = Integer.toBinaryString(intBits);
+
+        String hexadecimal = CommonUtils.convertBinaryToHexadecimal(binary);
+        setDataInMainMemoryByLocation(hexadecimal.substring(0,4), simulator.getOpcode().getEffectiveAddress());
+        setDataInMainMemoryByLocation(hexadecimal.substring(4,8), simulator.getOpcode().getEffectiveAddress()+1);
+    }
+
+    /**
+     * Converting the data from the memory to the fixed/floating point number.
+     */
+    private void performConvertFloatingOperation() {
+        String memory1Hexadecimal = getDataFromMainMemoryByLocation(
+                simulator.getOpcode().getEffectiveAddress());
+        String memory2Hexadecimal = getDataFromMainMemoryByLocation(CommonUtils.incrementHexadecimal(
+                simulator.getOpcode().getEffectiveAddress(),1));
+        String memoryBinary = CommonUtils.convertFullHexadecimalToBinary(
+                memory1Hexadecimal+memory2Hexadecimal);
+        int binaryToBitsConversion = Integer.parseInt(memoryBinary, 2);
+        float calculatedFloatFromMemory = Float.intBitsToFloat(binaryToBitsConversion);
+
+        simulator.setFR0(String.valueOf(calculatedFloatFromMemory));
     }
 }
